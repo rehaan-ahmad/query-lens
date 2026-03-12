@@ -60,7 +60,7 @@ def seed_db() -> None:
         cursor.execute("DELETE FROM vehicles")
         logger.info("Cleared existing vehicle records.")
 
-        with open(CSV_PATH, newline="", encoding="utf-8") as f:
+        with open(CSV_PATH, newline="", encoding="utf-8", errors="replace") as f:
             reader = csv.DictReader(f)
 
             for row_num, row in enumerate(reader, start=1):
@@ -110,4 +110,4 @@ def seed_db() -> None:
 
 if __name__ == "__main__":
     seed_db()
-    print(f"✅ Seed complete — {inserted} rows inserted.")
+    print("✅ Seed complete.")
