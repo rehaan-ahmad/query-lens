@@ -123,7 +123,7 @@ def _get_gemini_client() -> genai.GenerativeModel:
             "Obtain a key from https://aistudio.google.com and set it in backend/.env"
         )
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel(model_name="gemini-1.5-flash")
+    return genai.GenerativeModel(model_name="gemini-2.5-flash")
 
 
 # ---------------------------------------------------------------------------
