@@ -32,7 +32,7 @@ User types NL query
 |---|---|
 | Frontend | Next.js 14, React 18, Tailwind CSS 3, Recharts, Anime.js |
 | Backend | Python 3.11+, FastAPI, Uvicorn |
-| LLM | Google Gemini 1.5 Flash |
+| LLM | Google Gemini 2.5 Flash |
 | Database | SQLite 3 (parameterized queries only) |
 | Auth | JWT (python-jose + passlib) |
 | Security | slowapi rate limiting, bleach sanitization, gitleaks |
@@ -71,20 +71,33 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# Fill in your GEMINI_API_KEY and JWT_SECRET_KEY in .env
+# Fill in your GEMINI_API_KEY and a random JWT_SECRET_KEY in .env
+
+# Initialize database
 python db/init_db.py
 python db/seed_db.py
+
+# Run the FastAPI server
 uvicorn main:app --reload --port 8000
 ```
 
 ### Frontend
 
+In a new terminal:
 ```bash
 cd frontend
 npm install
-# Create .env.local with NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Run the Next.js development server
 npm run dev
 ```
+
+The application will be available at [http://localhost:3000](http://localhost:3000).
+
+### Demo Credentials
+To login and test the application, use the configured local user:
+- **Username:** `admin`
+- **Password:** `querylens2024`
 
 ---
 
