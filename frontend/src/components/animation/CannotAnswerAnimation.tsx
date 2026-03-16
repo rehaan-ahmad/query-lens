@@ -19,18 +19,18 @@ export default function CannotAnswerAnimation() {
   }, []);
 
   return (
-    <svg ref={svgRef} viewBox="0 0 304 112" className="w-48 h-auto mb-6 text-olive opacity-80">
-      <g stroke="currentColor" fill="none" fillRule="evenodd" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
-        <path className="line" d="M59 90V56.136C58.66 46.48 51.225 39 42 39c-9.389 0-17 7.611-17 17s7.611 17 17 17h8.5v17H42C23.222 90 8 74.778 8 56s15.222-34 34-34c18.61 0 33.433 14.994 34 33.875V90H59z"/>
-        <polyline className="line" points="59 22.035 59 90 76 90 76 22 59 22"/>
-        <path className="line" d="M59 90V55.74C59.567 36.993 74.39 22 93 22c18.778 0 34 15.222 34 34v34h-17V56c0-9.389-7.611-17-17-17-9.225 0-16.66 7.48-17 17.136V90H59z"/>
-        <polyline className="line" points="127 22.055 127 90 144 90 144 22 127 22"/>
-        <path className="line" d="M127 90V55.74C127.567 36.993 142.39 22 161 22c18.778 0 34 15.222 34 34v34h-17V56c0-9.389-7.611-17-17-17-9.225 0-16.66 7.48-17 17.136V90h-17z"/>
-        <path className="line" d="M118.5 22a8.5 8.5 0 1 1-8.477 9.067v-1.134c.283-4.42 3.966-7.933 8.477-7.933z"/>
-        <path className="line" d="M144 73c-9.389 0-17-7.611-17-17v-8.5h-17V56c0 18.778 15.222 34 34 34V73z"/>
-        <path className="line" d="M178 90V55.74C178.567 36.993 193.39 22 212 22c18.778 0 34 15.222 34 34v34h-17V56c0-9.389-7.611-17-17-17-9.225 0-16.66 7.48-17 17.136V90h-17z"/>
-        <path className="line" d="M263 73c-9.389 0-17-7.611-17-17s7.611-17 17-17c9.18 0 16.58 7.4 17 17h-17v17h34V55.875C296.433 36.994 281.61 22 263 22c-18.778 0-34 15.222-34 34s15.222 34 34 34V73z"/>
-        <path className="line" d="M288.477 73A8.5 8.5 0 1 1 280 82.067v-1.134c.295-4.42 3.967-7.933 8.477-7.933z"/>
+    <svg ref={svgRef} viewBox="0 0 320 100" className="w-56 h-auto mb-6 text-red-500/80">
+      <g stroke="currentColor" fill="none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+        {/* E */}
+        <path className="line" d="M 60 10 L 20 10 L 20 90 L 60 90 M 20 50 L 50 50" />
+        {/* R */}
+        <path className="line" d="M 80 90 L 80 10 C 120 10, 120 50, 80 50 L 120 90" />
+        {/* R */}
+        <path className="line" d="M 140 90 L 140 10 C 180 10, 180 50, 140 50 L 180 90" />
+        {/* O */}
+        <path className="line" d="M 220 10 A 20 40 0 0 1 220 90 A 20 40 0 0 1 220 10" />
+        {/* R */}
+        <path className="line" d="M 260 90 L 260 10 C 300 10, 300 50, 260 50 L 300 90" />
       </g>
     </svg>
   );
