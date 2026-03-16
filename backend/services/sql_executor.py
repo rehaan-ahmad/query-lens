@@ -28,10 +28,13 @@ MAX_SQL_LENGTH = 2000
 
 def _get_db_path() -> str:
     """Load database path from environment. Fail fast if not set."""
-    path = os.environ.get("DATABASE_PATH", "")
-    if not path:
-        raise RuntimeError("DATABASE_PATH environment variable is not set.")
-    return path
+    try:
+        path = os.environ["DATABASE_PATH"]
+        if not path:
+            raise KeyError
+        return path
+    except KeyError:
+        raise RuntimeError("DATABASE_PATH environment variable is not set or is empty.")
 
 
 def validate_sql(sql: str) -> None:

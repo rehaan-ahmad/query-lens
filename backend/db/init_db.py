@@ -20,9 +20,12 @@ logger = get_logger(__name__)
 
 
 def init_db() -> None:
-    db_path = os.environ.get("DATABASE_PATH", "")
-    if not db_path:
-        raise RuntimeError("DATABASE_PATH environment variable is not set.")
+    try:
+        db_path = os.environ["DATABASE_PATH"]
+        if not db_path:
+            raise KeyError
+    except KeyError:
+        raise RuntimeError("DATABASE_PATH environment variable is not set or is empty.")
 
     # Ensure parent directory exists
     db_dir = os.path.dirname(db_path)

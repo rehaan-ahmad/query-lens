@@ -21,10 +21,13 @@ MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
 def _get_db_path() -> str:
-    path = os.environ.get("DATABASE_PATH", "")
-    if not path:
-        raise RuntimeError("DATABASE_PATH environment variable is not set.")
-    return path
+    try:
+        path = os.environ["DATABASE_PATH"]
+        if not path:
+            raise KeyError
+        return path
+    except KeyError:
+        raise RuntimeError("DATABASE_PATH environment variable is not set or is empty.")
 
 
 def load_csv_to_table(

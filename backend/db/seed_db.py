@@ -42,9 +42,12 @@ def _parse_float(value: str, field: str, row_num: int) -> float:
 
 
 def seed_db() -> None:
-    db_path = os.environ.get("DATABASE_PATH", "")
-    if not db_path:
-        raise RuntimeError("DATABASE_PATH environment variable is not set.")
+    try:
+        db_path = os.environ["DATABASE_PATH"]
+        if not db_path:
+            raise KeyError
+    except KeyError:
+        raise RuntimeError("DATABASE_PATH environment variable is not set or is empty.")
 
     if not os.path.exists(CSV_PATH):
         raise FileNotFoundError(f"BMW CSV not found at: {CSV_PATH}")

@@ -35,13 +35,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 def _get_jwt_secret() -> str:
     """Load JWT secret from environment. Raises immediately if not set."""
-    secret = os.environ.get("JWT_SECRET_KEY", "")
-    if not secret:
+    try:
+        secret = os.environ["JWT_SECRET_KEY"]
+        if not secret:
+            raise KeyError
+        return secret
+    except KeyError:
         raise RuntimeError(
-            "JWT_SECRET_KEY environment variable is not set. "
+            "JWT_SECRET_KEY environment variable is not set or is empty. "
             "Set it before starting the server."
         )
-    return secret
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

@@ -73,7 +73,10 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Load allowed origins from env — fail to a safe default if not set.
 # ---------------------------------------------------------------------------
 
-_raw_origins = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000")
+try:
+    _raw_origins = os.environ["ALLOWED_ORIGINS"]
+except KeyError:
+    _raw_origins = "http://localhost:3000"
 allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app.add_middleware(

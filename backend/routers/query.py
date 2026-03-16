@@ -34,8 +34,11 @@ logger = get_logger(__name__)
 def _record_history(session_id: str, user_query: str, chart_type: str) -> None:
     """Persist a query to the history table (best-effort, never raises)."""
     try:
-        db_path = os.environ.get("DATABASE_PATH", "")
-        if not db_path:
+        try:
+            db_path = os.environ["DATABASE_PATH"]
+            if not db_path:
+                raise KeyError
+        except KeyError:
             return
         conn = sqlite3.connect(db_path)
         try:
@@ -153,8 +156,11 @@ async def get_history(
         return HistoryResponse(items=[])
 
     try:
-        db_path = os.environ.get("DATABASE_PATH", "")
-        if not db_path:
+        try:
+            db_path = os.environ["DATABASE_PATH"]
+            if not db_path:
+                raise KeyError
+        except KeyError:
             return HistoryResponse(items=[])
 
         # Parameterized query (AthenaGuard §2)

@@ -14,6 +14,7 @@ from typing import Any
 import google.generativeai as genai
 
 from utils.logger import get_logger
+from utils.sanitize import sanitize_text
 
 logger = get_logger(__name__)
 
@@ -116,10 +117,13 @@ def _get_gemini_client() -> genai.GenerativeModel:
     Initialise Gemini client with API key from environment.
     AthenaGuard §6: Fail fast if key is missing. NEVER log the key.
     """
-    api_key = os.environ.get("GEMINI_API_KEY", "")
-    if not api_key:
+    try:
+        api_key = os.environ["GEMINI_API_KEY"]
+        if not api_key:
+            raise KeyError
+    except KeyError:
         raise RuntimeError(
-            "GEMINI_API_KEY environment variable is not set. "
+            "GEMINI_API_KEY environment variable is not set or is empty. "
             "Obtain a key from https://aistudio.google.com and set it in backend/.env"
         )
     genai.configure(api_key=api_key)
@@ -176,12 +180,13 @@ def nl_to_sql(user_query: str) -> dict[str, Any]:
 
         # -- Basic structural validation before returning --
         first_token = sql.split()[0].upper() if sql.split() else ""
-        if first_token != "SELECT":
+        if not first_token.startswith("SELECT"):
+            # Check startsWith instead of strict equality in case of 'SELECT*' or similar
             logger.warning("Gemini returned non-SELECT SQL — treating as cannot_answer")
             return {"error": "cannot_answer"}
 
         # AthenaGuard §7: No credentials or real data rows in the prompt (enforced above)
-        explanation = _generate_explanation(user_query, sql)
+        explanation = sanitize_text(_generate_explanation(user_query, sql))
 
         return {
             "sql": sql,
