@@ -5,23 +5,24 @@ import PieChartComponent from "./PieChart";
 import ScatterChartComponent from "./ScatterChart";
 import StatCard from "./StatCard";
 import { ShieldAlert } from "lucide-react";
+import CannotAnswerAnimation from "../animation/CannotAnswerAnimation";
 
 type ChartRouterProps = {
   chartType?: string;
   data?: Record<string, unknown>[];
   columns?: string[];
+  explanation?: string;
 };
 
-export default function ChartRouter({ chartType, data }: ChartRouterProps) {
+export default function ChartRouter({ chartType, data, explanation }: ChartRouterProps) {
   if (!chartType) return null;
 
   if (chartType === "cannot_answer") {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-8 text-ink bg-surface rounded-xl shadow-sm border border-muted/20">
-        <ShieldAlert className="w-12 h-12 text-olive mb-4 opacity-80" />
-        <h3 className="text-xl font-serif mb-2">No Data Available</h3>
-        <p className="text-muted text-pretty max-w-sm">
-          I could not find data to answer that question from the available inventory.
+        <CannotAnswerAnimation />
+        <p className="text-muted text-pretty max-w-sm font-medium text-lg">
+          Cannot answer due to : {explanation || "Inventory missing relevant info."}
         </p>
       </div>
     );

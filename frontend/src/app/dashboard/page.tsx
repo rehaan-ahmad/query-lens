@@ -110,7 +110,8 @@ export default function Dashboard() {
                  <ChartRouter 
                    chartType={result.chart_type} 
                    data={result.data} 
-                   columns={result.columns} 
+                   columns={result.columns}
+                   explanation={result.explanation} 
                  />
               </div>
             </div>

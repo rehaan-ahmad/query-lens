@@ -25,11 +25,21 @@ export function useQuery() {
       if (sessionId) payload.session_id = sessionId;
 
       const res = await api.post("/api/query", payload);
-      setResult(res.data);
+      if (res.data?.type === "cannot_answer") {
+        setResult({
+          chart_type: "cannot_answer",
+          explanation: res.data?.message || "I could not find data to answer that question from the available inventory."
+        });
+      } else {
+        setResult(res.data);
+      }
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
         if (err.response.data?.type === "cannot_answer") {
-           setResult({ chart_type: "cannot_answer" });
+           setResult({ 
+             chart_type: "cannot_answer", 
+             explanation: err.response.data?.message || "I could not find data to answer that question from the available inventory." 
+           });
         } else {
            setError(err.response.data?.detail || "Error connecting to the server.");
         }
