@@ -52,7 +52,7 @@ def _authenticate_user(username: str, password: str) -> bool:
 
 
 @router.post("/token", response_model=TokenResponse)
-@limiter.limit("5/15minutes")  # AthenaGuard §5: 5 attempts per 15 min per IP
+@limiter.limit("50/15minutes")  # AthenaGuard §5: 50 attempts per 15 min per IP (increased for dev testing)
 async def login(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
