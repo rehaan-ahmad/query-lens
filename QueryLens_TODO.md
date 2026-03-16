@@ -456,57 +456,57 @@
 
 ### 7.1 SQL Injection Prevention (AthenaGuard §2)
 
-- [ ] Audit every SQL call in the codebase — verify zero instances of f-string or `+` concatenation in SQL
-- [ ] Add a test: pass `"1 OR 1=1; DROP TABLE vehicles; --"` as user input → confirm safe rejection
-- [ ] Ensure `execute_query()` rejects any SQL not starting with `SELECT`
+- [x] Audit every SQL call in the codebase — verify zero instances of f-string or `+` concatenation in SQL
+- [x] Add a test: pass `"1 OR 1=1; DROP TABLE vehicles; --"` as user input → confirm safe rejection
+- [x] Ensure `execute_query()` rejects any SQL not starting with `SELECT`
 
 ### 7.2 API Security (AthenaGuard §3)
 
-- [ ] Confirm every endpoint except `/health` and `/api/auth/token` requires a valid JWT
-- [ ] Verify `slowapi` rate limits are active on all routes
-- [ ] Verify all responses use Pydantic schemas — no raw dict dumps
-- [ ] Confirm error messages never reveal internal details (no stack traces, no SQL in errors)
+- [x] Confirm every endpoint except `/health` and `/api/auth/token` requires a valid JWT
+- [x] Verify `slowapi` rate limits are active on all routes
+- [x] Verify all responses use Pydantic schemas — no raw dict dumps
+- [x] Confirm error messages never reveal internal details (no stack traces, no SQL in errors)
 
 ### 7.3 XSS Prevention (AthenaGuard §4)
 
-- [ ] Audit all React components — confirm no `dangerouslySetInnerHTML` without `DOMPurify`
-- [ ] Sanitize AI-generated explanation text with `bleach` on the backend before sending to frontend
-- [ ] Add Content-Security-Policy header in Next.js `next.config.js`:
+- [x] Audit all React components — confirm no `dangerouslySetInnerHTML` without `DOMPurify`
+- [x] Sanitize AI-generated explanation text with `bleach` on the backend before sending to frontend
+- [x] Add Content-Security-Policy header in Next.js `next.config.mjs`:
   ```
   default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;
   ```
 
 ### 7.4 Authentication (AthenaGuard §5)
 
-- [ ] Confirm JWT token includes `exp` claim (1 hour)
-- [ ] Confirm JWT secret is loaded from env — never hardcoded
-- [ ] Confirm login endpoint returns identical error for wrong user and wrong password
-- [ ] Confirm login is rate-limited at IP level
+- [x] Confirm JWT token includes `exp` claim (1 hour)
+- [x] Confirm JWT secret is loaded from env — never hardcoded
+- [x] Confirm login endpoint returns identical error for wrong user and wrong password
+- [x] Confirm login is rate-limited at IP level
 
 ### 7.5 Secrets Management (AthenaGuard §6)
 
-- [ ] Run gitleaks scan against full commit history:
+- [x] Run gitleaks scan against full commit history:
   ```bash
   gitleaks detect --source . --verbose
   ```
-- [ ] Confirm `.env` is in `.gitignore` and was never committed:
+- [x] Confirm `.env` is in `.gitignore` and was never committed:
   ```bash
   git log --all --full-history -- .env
   ```
-- [ ] Confirm all env vars loaded via `os.environ["KEY"]` (raises error if missing) — not `os.environ.get()`
+- [x] Confirm all env vars loaded via `os.environ["KEY"]` (raises error if missing) — not `os.environ.get()`
 
 ### 7.6 CSV Upload Security
 
-- [ ] Validate file type server-side (Content-Type header + magic bytes check) — not filename alone
-- [ ] Enforce 10MB file size limit
-- [ ] Sanitize all column names: strip whitespace, replace special chars, length limit 64 chars
-- [ ] Never send raw uploaded data to Gemini — schema description only
+- [x] Validate file type server-side (Content-Type header + magic bytes check) — not filename alone
+- [x] Enforce 10MB file size limit
+- [x] Sanitize all column names: strip whitespace, replace special chars, length limit 64 chars
+- [x] Never send raw uploaded data to Gemini — schema description only
 
 ### 7.7 AI-Specific Risks (AthenaGuard §7)
 
-- [ ] Verify all packages installed are from official registries — cross-check PyPI/npm for each
-- [ ] Verify no credentials or real data are included in Gemini system prompt
-- [ ] Add hallucination handling — `CANNOT_ANSWER` response renders graceful UI state
+- [x] Verify all packages installed are from official registries — cross-check PyPI/npm for each
+- [x] Verify no credentials or real data are included in Gemini system prompt
+- [x] Add hallucination handling — `CANNOT_ANSWER` response renders graceful UI state
 
 ---
 
