@@ -35,6 +35,11 @@ def init_db() -> None:
     conn = sqlite3.connect(db_path)
     try:
         cursor = conn.cursor()
+        
+        # Optimize SQLite for concurrency and performance
+        cursor.execute("PRAGMA journal_mode=WAL;")
+        cursor.execute("PRAGMA synchronous=NORMAL;")
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS vehicles (
                 id           INTEGER PRIMARY KEY AUTOINCREMENT,
