@@ -93,7 +93,7 @@ export default function Connector({ phase }: { phase: Phase }) {
         <div 
           key={i}
           ref={(el) => { if(el) squaresRef.current[i] = el; }}
-          className="w-3 h-3 rounded-sm bg-navy opacity-30 shadow-sm"
+          className="w-3 h-3 rounded-sm bg-accent opacity-30 shadow-sm"
         />
       ))}
     </div>

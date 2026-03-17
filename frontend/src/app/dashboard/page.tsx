@@ -8,6 +8,7 @@ import QueryHistory from "@/components/query/QueryHistory";
 import QueryInput from "@/components/query/QueryInput";
 import ResponsePanel from "@/components/query/ResponsePanel";
 import ChartRouter from "@/components/charts/ChartRouter";
+import LoadingCube from "@/components/query/LoadingCube";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Dashboard() {
@@ -124,7 +125,7 @@ export default function Dashboard() {
             </div>
           ) : (
              <div className="w-full h-full flex items-center justify-center">
-               <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin opacity-40"></div>
+               <LoadingCube />
              </div>
           )}
         </div>

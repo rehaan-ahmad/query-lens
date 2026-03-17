@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { tooltipStyle, CHAT_COLORS } from "./chartTheme";
 
 export default function PieChartComponent({ data }: { data: Record<string, unknown>[];  }) {
   if (!data || data.length === 0) return null;
@@ -16,7 +17,6 @@ export default function PieChartComponent({ data }: { data: Record<string, unkno
   const nameKey = keys[0];
   const valueKey = keys[1];
 
-  const COLORS = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#76b7b2", "#edc948", "#b07aa1"];
 
   // Prepare data (ensure values are numeric)
   const chartData = data.map(item => ({
@@ -42,13 +42,10 @@ export default function PieChartComponent({ data }: { data: Record<string, unkno
             labelLine={false}
           >
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={`cell-${index}`} fill={CHAT_COLORS[index % CHAT_COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip 
-            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-            itemStyle={{ color: 'var(--foreground)' }}
-          />
+          <Tooltip {...tooltipStyle} />
           <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>

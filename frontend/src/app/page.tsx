@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export default function LandingPage() {
   return (
     <PageTransition>
-      <div className="min-h-screen bg-cream text-ink relative overflow-hidden font-sans selection:bg-olive selection:text-white">
+      <div className="min-h-screen bg-background text-foreground relative overflow-hidden font-sans selection:bg-accent selection:text-white">
         
         {/* Subtle dot pattern background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #3b3c36 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>

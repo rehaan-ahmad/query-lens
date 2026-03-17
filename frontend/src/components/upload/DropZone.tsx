@@ -43,8 +43,8 @@ export default function DropZone({ onFileSelect }: DropZoneProps) {
 
   return (
     <div
-      className={`w-full p-12 rounded-[20px] border-2 border-dashed transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer bg-surface hover:bg-cream/50
-        ${isDragging ? "border-olive bg-olive/5" : "border-muted/30"}`}
+      className={`w-full p-12 rounded-[20px] border-2 border-dashed transition-all duration-200 ease-in-out flex flex-col items-center justify-center cursor-pointer bg-surface hover:bg-surface/50
+        ${isDragging ? "border-accent bg-accent/5" : "border-muted/30"}`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
       onDragOver={handleDrag}
@@ -59,18 +59,18 @@ export default function DropZone({ onFileSelect }: DropZoneProps) {
         onChange={handleChange}
       />
       
-      <div className={`p-4 rounded-full mb-4 transition-colors ${isDragging ? "bg-olive/20 text-olive" : "bg-cream text-muted"}`}>
+      <div className={`p-4 rounded-full mb-4 transition-colors ${isDragging ? "bg-accent/20 text-accent" : "bg-background text-muted"}`}>
         {isDragging ? <UploadCloud className="w-8 h-8" /> : <FileType className="w-8 h-8" />}
       </div>
       
-      <p className="text-lg font-medium text-navy mb-1">
+      <p className="text-lg font-medium text-foreground mb-1">
         {isDragging ? "Drop CSV here..." : "Drag & Drop your CSV file"}
       </p>
       <p className="text-sm text-muted">
         or click to browse your computer
       </p>
       
-      <div className="mt-8 flex items-center space-x-2 text-xs font-mono text-muted/60 bg-cream/50 px-3 py-1.5 rounded-md">
+      <div className="mt-8 flex items-center space-x-2 text-xs font-mono text-muted/60 bg-surface/50 px-3 py-1.5 rounded-md">
         <span>Max size: 10MB</span>
         <span>•</span>
         <span>.csv only</span>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Connector from "../animation/Connector";
-import ParticleField from "../animation/ParticleField";
+import MetronomeBatons from "../animation/MetronomeBatons";
 
 type Phase = "idle" | "querying" | "delivering" | "ready";
 
@@ -53,7 +53,7 @@ export default function ResponsePanel({
     <div className="relative w-full h-full flex flex-col items-center justify-center p-6 bg-transparent z-10 overflow-hidden">
       
       {/* Ambient background particles during querying */}
-      <ParticleField active={phase === "querying"} />
+      <MetronomeBatons active={phase === "querying"} />
 
       {/* Center connector animation */}
       <div className="mb-8 z-10">

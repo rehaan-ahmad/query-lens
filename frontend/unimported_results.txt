@@ -1,0 +1,64 @@
+
+       summary               unimported v1.31.0 (next)
+──────────────────────────────
+
+       unresolved imports  : 0
+       unused dependencies : 13
+       unimported files    : 29
+
+
+─────┬────────────────────────
+     │ 13 unused dependencies
+─────┼────────────────────────
+   1 │ @types/animejs
+   2 │ @types/dompurify
+   3 │ @types/papaparse
+   4 │ @types/uuid
+   5 │ animejs
+   6 │ axios
+   7 │ date-fns
+   8 │ dompurify
+   9 │ lucide-react
+  10 │ next-themes
+  11 │ papaparse
+  12 │ recharts
+  13 │ uuid
+─────┴────────────────────────
+
+
+─────┬────────────────────────
+     │ 29 unimported files
+─────┼────────────────────────
+   1 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/dashboard/page.tsx
+   2 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/history/page.tsx
+   3 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/layout.tsx
+   4 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/login/page.tsx
+   5 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/page.tsx
+   6 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/app/upload/page.tsx
+   7 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/animation/CannotAnswerAnimation.tsx
+   8 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/animation/Connector.tsx
+   9 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/animation/MetronomeBatons.tsx
+  10 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/animation/PageTransition.tsx
+  11 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/animation/ParticleField.tsx
+  12 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/BarChart.tsx
+  13 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/ChartRouter.tsx
+  14 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/LineChart.tsx
+  15 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/PieChart.tsx
+  16 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/ScatterChart.tsx
+  17 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/charts/StatCard.tsx
+  18 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/query/LoadingCube.tsx
+  19 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/query/QueryHistory.tsx
+  20 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/query/QueryInput.tsx
+  21 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/query/ResponsePanel.tsx
+  22 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/ThemeProvider.tsx
+  23 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/ThemeToggle.tsx
+  24 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/upload/CSVPreview.tsx
+  25 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/components/upload/DropZone.tsx
+  26 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/hooks/useAuth.ts
+  27 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/hooks/useHistory.ts
+  28 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/hooks/useQuery.ts
+  29 │ /home/rehaan-ahmad/projects/QueryLens/frontend/src/lib/api.ts
+─────┴────────────────────────
+
+
+       Inspect the results and run npx unimported -u to update ignore lists

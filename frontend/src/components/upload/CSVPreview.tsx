@@ -41,7 +41,7 @@ export default function CSVPreview({ file }: CSVPreviewProps) {
 
   return (
     <div className="w-full bg-surface rounded-xl border border-muted/20 overflow-hidden shadow-sm">
-      <div className="bg-cream/50 px-4 py-3 border-b border-muted/20 flex justify-between items-center">
+      <div className="bg-surface/50 px-4 py-3 border-b border-muted/20 flex justify-between items-center">
         <h4 className="text-sm font-semibold text-navy">Data Preview</h4>
         <span className="text-xs font-mono text-muted bg-surface px-2 py-0.5 rounded border border-muted/10">
           Showing first {data.length} rows
@@ -50,7 +50,7 @@ export default function CSVPreview({ file }: CSVPreviewProps) {
       
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs text-muted uppercase bg-cream/20">
+          <thead className="text-xs text-muted uppercase bg-surface/20">
             <tr>
               {columns.map((col, i) => (
                 <th key={i} className="px-4 py-3 font-medium whitespace-nowrap">
@@ -61,9 +61,9 @@ export default function CSVPreview({ file }: CSVPreviewProps) {
           </thead>
           <tbody className="divide-y divide-muted/10">
             {data.map((row, i) => (
-              <tr key={i} className="hover:bg-cream/30 transition-colors">
+              <tr key={i} className="hover:bg-surface/30 transition-colors">
                 {columns.map((col, j) => (
-                  <td key={j} className="px-4 py-2.5 text-ink whitespace-nowrap max-w-[200px] truncate">
+                  <td key={j} className="px-4 py-2.5 text-foreground whitespace-nowrap max-w-[200px] truncate">
                     {row[col] || <span className="text-muted/40 italic">null</span>}
                   </td>
                 ))}

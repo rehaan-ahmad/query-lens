@@ -27,14 +27,14 @@ export default function LoginPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-4 antialiased">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 antialiased">
         
         <div className="w-full max-w-md bg-surface p-10 rounded-2xl shadow-xl border border-muted/20 relative overflow-hidden">
           
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-olive to-navy"></div>
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-accent to-accent-glow"></div>
           
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-serif text-navy mb-2">QueryLens</h1>
+            <h1 className="text-3xl font-serif text-foreground mb-2">QueryLens</h1>
             <p className="text-sm text-muted">Sign in to access the BI Dashboard</p>
           </div>
 
@@ -51,7 +51,7 @@ export default function LoginPage() {
                 type="text" 
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-cream border border-muted/30 focus:outline-none focus:ring-2 focus:ring-olive/50 focus:border-olive transition-colors text-ink"
+                className="w-full px-4 py-3 rounded-xl bg-background border border-muted/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors text-foreground"
                 required 
               />
             </div>
@@ -62,7 +62,7 @@ export default function LoginPage() {
                 type="password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-cream border border-muted/30 focus:outline-none focus:ring-2 focus:ring-olive/50 focus:border-olive transition-colors text-ink"
+                className="w-full px-4 py-3 rounded-xl bg-background border border-muted/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors text-foreground"
                 required 
               />
             </div>
@@ -70,7 +70,7 @@ export default function LoginPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-navy text-white rounded-xl py-3.5 mt-4 font-medium hover:bg-olive transition-colors disabled:opacity-50 flex items-center justify-center shadow-md"
+              className="w-full bg-accent text-white rounded-xl py-3.5 mt-4 font-medium hover:bg-accent-glow transition-colors disabled:opacity-50 flex items-center justify-center shadow-md"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
             </button>

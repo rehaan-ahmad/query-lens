@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${sourceSans.variable} ${plexMono.variable} font-sans antialiased text-ink dark:text-slate-50 selection:bg-accent selection:text-white transition-colors duration-300`}
+        className={`${playfair.variable} ${sourceSans.variable} ${plexMono.variable} font-sans antialiased text-foreground dark:text-slate-50 selection:bg-accent selection:text-white transition-colors duration-300`}
       >
         <ThemeProvider
           attribute="class"

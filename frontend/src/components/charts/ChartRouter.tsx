@@ -4,7 +4,7 @@ import LineChartComponent from "./LineChart";
 import PieChartComponent from "./PieChart";
 import ScatterChartComponent from "./ScatterChart";
 import StatCard from "./StatCard";
-import { ShieldAlert } from "lucide-react";
+
 import CannotAnswerAnimation from "../animation/CannotAnswerAnimation";
 
 type ChartRouterProps = {
@@ -19,7 +19,7 @@ export default function ChartRouter({ chartType, data, explanation }: ChartRoute
 
   if (chartType === "cannot_answer") {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center p-8 text-ink bg-surface rounded-xl shadow-sm border border-muted/20">
+      <div className="flex flex-col items-center justify-center h-full text-center p-8 text-foreground bg-surface rounded-xl shadow-sm border border-muted/20">
         <CannotAnswerAnimation />
         <p className="text-muted text-pretty max-w-sm font-medium text-lg">
           Cannot answer due to : {explanation || "Inventory missing relevant info."}

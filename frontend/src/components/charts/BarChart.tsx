@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Brush,
 } from "recharts";
+import { tooltipStyle, CHAT_COLORS } from "./chartTheme";
 
 export default function BarChartComponent({ data }: { data: Record<string, unknown>[];  }) {
   if (!data || data.length === 0) return null;
@@ -20,7 +21,6 @@ export default function BarChartComponent({ data }: { data: Record<string, unkno
   const xKey = keys[0];
   const barKeys = keys.slice(1);
 
-  const colors = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#76b7b2"];
 
   return (
     <div className="w-full h-full min-h-[400px]">
@@ -43,15 +43,14 @@ export default function BarChartComponent({ data }: { data: Record<string, unkno
           />
           <Tooltip 
             cursor={{ fill: 'var(--muted)', opacity: 0.1 }}
-            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-            itemStyle={{ color: 'var(--foreground)' }}
+            {...tooltipStyle}
           />
           <Legend wrapperStyle={{ paddingTop: "20px" }} />
           {barKeys.map((key, index) => (
             <Bar 
               key={key} 
               dataKey={key} 
-              fill={colors[index % colors.length]} 
+              fill={CHAT_COLORS[index % CHAT_COLORS.length]} 
               radius={[4, 4, 0, 0]}
               animationDuration={800}
               isAnimationActive={true}

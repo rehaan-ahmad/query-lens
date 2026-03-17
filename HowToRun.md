@@ -66,3 +66,4 @@ The frontend will now be running at `http://localhost:3000`.
 1. Navigate to `http://localhost:3000` in your web browser.
 2. Sign in with the default credentials (`admin` / `querylens2024`).
 3. Try querying: "What is the average price of a BMW?" to ensure the frontend securely communicates with the backend and the Gemini API.
+4. Try toggling the **Light/Dark Mode** switch in the top right header to see the new glassmorphism theme!

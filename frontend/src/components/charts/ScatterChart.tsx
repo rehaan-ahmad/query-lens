@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { tooltipStyle, CHAT_COLORS } from "./chartTheme";
 
 export default function ScatterChartComponent({ data }: { data: Record<string, unknown>[];  }) {
   if (!data || data.length === 0) return null;
@@ -43,14 +44,13 @@ export default function ScatterChartComponent({ data }: { data: Record<string, u
           <ZAxis range={[60, 60]} /> 
           <Tooltip 
             cursor={{ strokeDasharray: '3 3', stroke: 'var(--muted)' }}
-            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-            itemStyle={{ color: 'var(--foreground)' }}
+            {...tooltipStyle}
           />
           <Legend wrapperStyle={{ paddingTop: "20px" }} />
           <Scatter 
             name={`Relation between ${xKey} and ${yKey}`} 
             data={data} 
-            fill="#4e79a7"
+            fill={CHAT_COLORS[0]}
             animationDuration={1000}
             isAnimationActive={true}
           />

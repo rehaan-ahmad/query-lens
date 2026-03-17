@@ -24,12 +24,12 @@ export default function HistoryPage() {
   }, [sessionId, isAuthenticated, fetchHistory]);
 
   if (isAuthenticated === false) {
-    return <div className="p-8 text-center bg-cream min-h-screen">Redirecting...</div>;
+    return <div className="p-8 text-center bg-background min-h-screen">Redirecting...</div>;
   }
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-cream text-ink flex flex-col py-16 px-6 relative">
+      <div className="min-h-screen bg-background text-foreground flex flex-col py-16 px-6 relative">
         <div className="w-full max-w-4xl mx-auto flex flex-col">
           
           <div className="flex items-center justify-between mb-16">
@@ -68,12 +68,12 @@ export default function HistoryPage() {
                     
                     {/* Timeline Node */}
                     <div className="w-[80px] flex-shrink-0 flex justify-center pt-1.5 relative z-10">
-                      <div className="w-4 h-4 rounded-full bg-cream border-[3px] border-olive shadow-sm group-hover:scale-125 transition-transform"></div>
+                      <div className="w-4 h-4 rounded-full bg-background border-[3px] border-accent shadow-sm group-hover:scale-125 transition-transform"></div>
                     </div>
 
                     <div className="flex-1 bg-surface rounded-2xl p-8 border border-muted/20 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex justify-between items-start mb-4">
-                        <span className="text-xs font-mono text-muted uppercase tracking-wider bg-cream/50 px-3 py-1 rounded">
+                        <span className="text-xs font-mono text-muted uppercase tracking-wider bg-surface/50 px-3 py-1 rounded">
                           {format(new Date(item.created_at), "h:mm a · MMM d, yyyy")}
                         </span>
                         

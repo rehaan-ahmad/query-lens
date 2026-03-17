@@ -30,7 +30,7 @@ User types NL query
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 14, React 18, Tailwind CSS 3, Recharts, Anime.js |
+| Frontend | Next.js 14, React 18, Tailwind CSS (Glassmorphism), `next-themes` (Light/Dark Mode), Recharts, Anime.js |
 | Backend | Python 3.11+, FastAPI, Uvicorn |
 | LLM | Google Gemini 2.5 Flash |
 | Database | SQLite 3 (parameterized queries only) |
@@ -43,7 +43,7 @@ User types NL query
 
 ```
 /querylens
-  /frontend         — Next.js app (React 18, Tailwind, Recharts, Anime.js)
+  /frontend         — Next.js app (React 18, Tailwind, next-themes, Recharts, Anime.js)
   /backend          — FastAPI app (Gemini LLM, SQLite, JWT auth)
   /data             — BMW_Vehicle_Inventory.csv + seed script
   /docs             — Problem statement, security guide (reference)

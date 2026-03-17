@@ -34,7 +34,7 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
           <input
             type="text"
             className="w-full bg-surface/80 dark:bg-surface/50 backdrop-blur-md border border-black/10 dark:border-white/10 text-foreground placeholder-muted rounded-full pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            placeholder="Ask anything about the BMW inventory..."
+            placeholder="Ask anything from your dataset"
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, maxLength))}
             onKeyDown={handleKeyDown}

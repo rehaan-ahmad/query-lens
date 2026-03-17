@@ -44,12 +44,12 @@ export default function UploadPage() {
   };
 
   if (isAuthenticated === false) {
-    return <div className="p-8 text-center text-ink bg-cream min-h-screen">Redirecting...</div>;
+    return <div className="p-8 text-center text-foreground bg-background min-h-screen">Redirecting...</div>;
   }
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-cream text-ink flex flex-col items-center py-16 px-6 relative">
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-16 px-6 relative">
         <div className="w-full max-w-4xl absolute top-8 left-8 flex items-center">
           <Link href="/dashboard" className="text-muted hover:text-navy flex items-center text-sm font-medium transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -59,7 +59,7 @@ export default function UploadPage() {
 
         <div className="max-w-3xl w-full">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-serif text-navy mb-3">Upload Custom Data</h1>
+            <h1 className="text-4xl font-serif text-foreground mb-3">Upload Custom Data</h1>
             <p className="text-muted text-lg font-light">
               Add your own CSV files to generate visualisations on custom datasets.
             </p>
@@ -86,7 +86,7 @@ export default function UploadPage() {
                   <button 
                     onClick={handleUpload}
                     disabled={uploading}
-                    className="bg-navy text-white px-8 py-4 rounded-[12px] hover:bg-olive transition-colors font-medium flex items-center shadow-md disabled:opacity-50"
+                    className="bg-accent text-white px-8 py-4 rounded-[12px] hover:bg-accent-glow transition-colors font-medium flex items-center shadow-md disabled:opacity-50"
                   >
                     {uploading ? (
                       <><Loader2 className="w-5 h-5 mr-3 animate-spin"/> Loading into Database...</>
@@ -100,28 +100,28 @@ export default function UploadPage() {
 
             {success && (
               <div className="bg-surface p-12 rounded-[24px] border border-muted/20 shadow-sm text-center animate-in zoom-in-95 duration-500">
-                <div className="w-20 h-20 bg-olive/10 text-olive rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-6">
                   <Database className="w-10 h-10" />
                 </div>
-                <h2 className="text-3xl font-serif text-navy mb-4">Upload Successful</h2>
+                <h2 className="text-3xl font-serif text-foreground mb-4">Upload Successful</h2>
                 <p className="text-muted mb-8 max-w-md mx-auto text-balance">
                   Your dataset has been successfully loaded into the AthenaGuard-protected execution layer.
                 </p>
                 
                 <div className="flex items-center justify-center space-x-6 mb-12">
-                  <div className="bg-cream/50 px-6 py-4 rounded-xl border border-muted/10">
+                  <div className="bg-surface/50 px-6 py-4 rounded-xl border border-black/5 dark:border-white/5">
                     <div className="text-xs font-mono text-muted uppercase tracking-wider mb-1">Rows Parsed</div>
-                    <div className="text-3xl font-sans font-light text-navy">{stats?.rows.toLocaleString()}</div>
+                    <div className="text-3xl font-sans font-light text-foreground">{stats?.rows.toLocaleString()}</div>
                   </div>
-                  <div className="bg-cream/50 px-6 py-4 rounded-xl border border-muted/10">
+                  <div className="bg-surface/50 px-6 py-4 rounded-xl border border-black/5 dark:border-white/5">
                     <div className="text-xs font-mono text-muted uppercase tracking-wider mb-1">Columns</div>
-                    <div className="text-3xl font-sans font-light text-navy">{stats?.cols}</div>
+                    <div className="text-3xl font-sans font-light text-foreground">{stats?.cols}</div>
                   </div>
                 </div>
 
                 <Link 
                   href="/dashboard"
-                  className="bg-navy text-white px-8 py-4 rounded-[12px] hover:bg-olive transition-all font-medium inline-block shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                  className="bg-accent text-white px-8 py-4 rounded-[12px] hover:bg-accent-glow transition-all font-medium inline-block shadow-md hover:shadow-lg hover:-translate-y-0.5"
                 >
                   Return to Dashboard
                 </Link>
