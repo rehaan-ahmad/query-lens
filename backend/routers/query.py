@@ -24,6 +24,7 @@ from models.schemas import (
 from services.gemini import nl_to_sql
 from services.sql_executor import execute_query, validate_sql
 from services.chart_selector import select_chart
+from services.csv_loader import get_upload_schema
 from utils.sanitize import validate_query_length
 from utils.logger import get_logger
 
@@ -89,8 +90,11 @@ async def submit_query(
         len(clean_query),
     )
 
-    # -- 2. NL → SQL via Gemini --
-    result = nl_to_sql(clean_query)
+    # -- 2. NL → SQL via Gemini (use uploaded schema if available) --
+    schema_override = get_upload_schema(body.session_id or "")
+    if schema_override:
+        logger.info("Using uploaded table schema for session=%s", body.session_id)
+    result = nl_to_sql(clean_query, schema_override=schema_override)
 
     if "error" in result:
         if result["error"] == "cannot_answer":

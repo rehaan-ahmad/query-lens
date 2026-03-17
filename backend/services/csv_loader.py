@@ -143,3 +143,42 @@ def drop_upload_table(session_id: str) -> None:
         logger.info("Dropped upload table: %s", table_name)
     finally:
         conn.close()
+
+
+def get_upload_schema(session_id: str) -> str | None:
+    """
+    Check if a session-scoped upload table exists and return its schema description.
+    Returns None if no uploaded table exists for this session.
+    """
+    if not session_id:
+        return None
+
+    safe_session = re.sub(r"[^a-zA-Z0-9_]", "_", session_id)[:32]
+    table_name = f"upload_{safe_session}"
+
+    try:
+        db_path = _get_db_path()
+        conn = sqlite3.connect(db_path)
+        try:
+            cursor = conn.cursor()
+            # Check if the table exists
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+                (table_name,),
+            )
+            if cursor.fetchone() is None:
+                return None
+
+            # Get column names via PRAGMA
+            cursor.execute(f"PRAGMA table_info({table_name})")  # noqa: S608
+            columns = [row[1] for row in cursor.fetchall()]
+
+            if not columns:
+                return None
+
+            return _build_schema_description(table_name, columns)
+        finally:
+            conn.close()
+    except Exception:
+        logger.warning("Failed to look up upload schema for session %s", session_id)
+        return None

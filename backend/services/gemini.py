@@ -109,6 +109,42 @@ Output: CANNOT_ANSWER
 """
 
 # ---------------------------------------------------------------------------
+# Dynamic prompt builder for uploaded tables
+# ---------------------------------------------------------------------------
+
+def _build_dynamic_prompt(schema_description: str) -> str:
+    """
+    Build a system prompt using a dynamically provided schema description
+    (e.g. from a user-uploaded CSV). AthenaGuard §7 still applies.
+    """
+    return f"""You are a BI SQL assistant for a custom dataset uploaded by the user.
+Your ONLY job is to convert natural language questions into valid SQLite SELECT queries.
+
+DATABASE SCHEMA:
+{schema_description}
+
+STRICT RULES — NEVER VIOLATE:
+1. Return ONLY a valid SQLite SELECT statement. No markdown, no code blocks, no explanation.
+2. If the question cannot be answered from this schema, return exactly: CANNOT_ANSWER
+3. NEVER use DROP, DELETE, INSERT, UPDATE, ALTER, CREATE, EXEC, PRAGMA, TRUNCATE, REPLACE, ATTACH, or DETACH.
+4. Only SELECT queries are permitted.
+5. For user-supplied filter values, use ? placeholders and list the values separately after a pipe character |.
+6. Maximum query length: 2000 characters.
+7. Always use column names exactly as listed in the schema.
+8. Queries should be efficient — avoid SELECT * unless necessary.
+9. All column names in the schema are TEXT type. Cast to REAL or INTEGER as needed for aggregation.
+
+OUTPUT FORMAT:
+If the question is answerable:
+  SQL_QUERY | param1,param2,...
+  (If no params: just the SQL with no pipe)
+
+If not answerable:
+  CANNOT_ANSWER
+"""
+
+
+# ---------------------------------------------------------------------------
 # Gemini client initialisation
 # ---------------------------------------------------------------------------
 
@@ -134,7 +170,7 @@ def _get_gemini_client() -> genai.GenerativeModel:
 # Core translation function
 # ---------------------------------------------------------------------------
 
-def nl_to_sql(user_query: str) -> dict[str, Any]:
+def nl_to_sql(user_query: str, schema_override: str | None = None) -> dict[str, Any]:
     """
     Translate a natural-language question into a parameterized SQLite SELECT.
 
@@ -154,7 +190,11 @@ def nl_to_sql(user_query: str) -> dict[str, Any]:
     try:
         model = _get_gemini_client()
 
-        prompt = f"{SYSTEM_PROMPT}\n\nQuestion: {user_query}\nOutput:"
+        if schema_override:
+            dynamic_prompt = _build_dynamic_prompt(schema_override)
+            prompt = f"{dynamic_prompt}\n\nQuestion: {user_query}\nOutput:"
+        else:
+            prompt = f"{SYSTEM_PROMPT}\n\nQuestion: {user_query}\nOutput:"
         response = model.generate_content(prompt)
         raw = response.text.strip()
         logger.info("Gemini raw response received (length=%d)", len(raw))
