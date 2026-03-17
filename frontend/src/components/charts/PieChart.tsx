@@ -46,8 +46,8 @@ export default function PieChartComponent({ data }: { data: Record<string, unkno
             ))}
           </Pie>
           <Tooltip 
-            contentStyle={{ backgroundColor: '#f2eee3', borderRadius: '8px', border: '1px solid #b2b49c', color: '#3b3c36' }}
-            itemStyle={{ color: '#3b3c36' }}
+            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+            itemStyle={{ color: 'var(--foreground)' }}
           />
           <Legend verticalAlign="bottom" height={36} />
         </PieChart>

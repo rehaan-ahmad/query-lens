@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, BarChart2, MessageSquare, Database } from "lucide-react";
 import PageTransition from "@/components/animation/PageTransition";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LandingPage() {
   return (
@@ -14,22 +15,26 @@ export default function LandingPage() {
 
         {/* Navbar */}
         <nav className="relative z-10 max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-          <div className="font-serif text-2xl tracking-tight text-navy font-bold">QueryLens.</div>
-          <Link href="/login" className="text-sm font-medium hover:text-olive transition-colors">
-            Sign In
-          </Link>
+          <div className="font-serif text-2xl tracking-tight font-bold">QueryLens.</div>
+          <div className="flex items-center space-x-6">
+            <ThemeToggle />
+            <Link href="/login" className="text-sm font-medium hover:text-accent transition-colors">
+              Sign In
+            </Link>
+          </div>
         </nav>
 
         {/* Hero Section */}
         <main className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32 lg:pt-32">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center space-x-2 bg-olive/10 text-olive px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-8 border border-olive/20">
-              <span className="w-2 h-2 rounded-full bg-olive animate-pulse"></span>
+            <div className="inline-flex items-center space-x-2 bg-accent/10 text-accent px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-8 border border-accent/20">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               <span>Gemini 1.5 Powered BIOS</span>
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-serif text-navy leading-[1.1] mb-8">
-              Ask your data <br/> anything.
+            <h1 className="text-5xl lg:text-7xl font-serif leading-[1.1] mb-8 tracking-tight">
+              Ask your data <br/> 
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-glow">anything.</span>
             </h1>
             
             <p className="text-xl text-muted leading-relaxed mb-12 max-w-2xl font-light">
@@ -38,7 +43,7 @@ export default function LandingPage() {
             
             <Link 
               href="/login"
-              className="group inline-flex items-center bg-navy text-white px-8 py-4 rounded-[12px] text-lg font-medium hover:bg-olive transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className="group inline-flex items-center bg-foreground text-background dark:bg-accent dark:text-white px-8 py-4 rounded-[12px] text-lg font-medium hover:opacity-90 transition-all shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5"
             >
               Start Querying
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -70,12 +75,13 @@ export default function LandingPage() {
 
 function DemoCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
-    <div className="bg-surface p-8 rounded-[16px] shadow-sm border border-muted/10 hover:border-olive/30 transition-colors group">
-      <div className="w-12 h-12 bg-cream rounded-xl flex items-center justify-center text-olive mb-6 group-hover:bg-olive group-hover:text-white transition-colors">
+    <div className="bg-surface/50 backdrop-blur-sm p-8 rounded-[16px] shadow-sm border border-black/5 dark:border-white/10 hover:border-accent/40 dark:hover:border-accent/40 transition-colors group relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div className="w-12 h-12 bg-background rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-colors relative z-10 shadow-sm border border-black/5 dark:border-white/5">
         {icon}
       </div>
-      <h3 className="text-xl font-serif text-navy mb-3">{title}</h3>
-      <p className="text-muted leading-relaxed">{description}</p>
+      <h3 className="text-xl font-serif mb-3 relative z-10">{title}</h3>
+      <p className="text-muted leading-relaxed relative z-10">{description}</p>
     </div>
   );
 }

@@ -52,11 +52,11 @@ export default function StatCard({ data }: { data: Record<string, unknown>[];  }
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
-      <div className="bg-surface rounded-2xl p-12 shadow-sm border border-muted/20 text-center flex flex-col items-center min-w-[300px]">
+      <div className="bg-surface/50 dark:bg-surface/20 backdrop-blur-sm rounded-2xl p-12 shadow-sm border border-black/5 dark:border-white/5 text-center flex flex-col items-center min-w-[300px]">
         <h4 className="text-muted font-sans text-sm tracking-wider uppercase mb-4">
           {label.replace(/_/g, " ")}
         </h4>
-        <div className="text-5xl md:text-7xl font-sans font-light text-navy tracking-tight">
+        <div className="text-5xl md:text-7xl font-sans font-light text-foreground tracking-tight">
           {formattedValue}
         </div>
       </div>

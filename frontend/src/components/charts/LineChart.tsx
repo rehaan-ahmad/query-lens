@@ -27,20 +27,21 @@ export default function LineChartComponent({ data }: { data: Record<string, unkn
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--muted)" strokeOpacity={0.2} />
           <XAxis 
             dataKey={xKey} 
-            tick={{ fill: '#3b3c36', fontSize: 12 }}
+            tick={{ fill: 'var(--foreground)', fontSize: 12, opacity: 0.8 }}
             tickMargin={10}
-            axisLine={{ stroke: '#b2b49c' }}
+            axisLine={{ stroke: 'var(--muted)', opacity: 0.3 }}
           />
           <YAxis 
-            tick={{ fill: '#3b3c36', fontSize: 12 }}
+            tick={{ fill: 'var(--foreground)', fontSize: 12, opacity: 0.8 }}
             axisLine={false}
             tickLine={false}
           />
           <Tooltip 
-            contentStyle={{ backgroundColor: '#f2eee3', borderRadius: '8px', border: '1px solid #b2b49c', color: '#3b3c36' }}
+            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+            itemStyle={{ color: 'var(--foreground)' }}
           />
           <Legend wrapperStyle={{ paddingTop: "20px" }} />
           {lineKeys.map((key, index) => (

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Sans_3, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -31,11 +32,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${sourceSans.variable} ${plexMono.variable} font-sans antialiased bg-cream text-ink selection:bg-olive selection:text-white`}
+        className={`${playfair.variable} ${sourceSans.variable} ${plexMono.variable} font-sans antialiased text-ink dark:text-slate-50 selection:bg-accent selection:text-white transition-colors duration-300`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

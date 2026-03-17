@@ -28,12 +28,12 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
   };
 
   return (
-    <div className="w-full bg-surface border-t border-muted/20 p-4 shadow-[0_-4px_20px_-15px_rgba(0,0,0,0.1)] z-20">
+    <div className="w-full bg-transparent p-6 z-20 pb-8">
       <div className="max-w-4xl mx-auto relative flex items-center">
-        <form onSubmit={handleSubmit} className="w-full relative">
+        <form onSubmit={handleSubmit} className="w-full relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full">
           <input
             type="text"
-            className="w-full bg-cream border border-muted/30 text-ink placeholder-muted/80 rounded-full pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-olive/50 focus:border-olive/50 transition-all text-lg shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-surface/80 dark:bg-surface/50 backdrop-blur-md border border-black/10 dark:border-white/10 text-foreground placeholder-muted rounded-full pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="Ask anything about the BMW inventory..."
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, maxLength))}
@@ -44,7 +44,7 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
           <button
             type="submit"
             disabled={disabled || !text.trim()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-navy text-white p-2.5 rounded-full hover:bg-olive transition-colors disabled:opacity-40 disabled:hover:bg-navy flex items-center justify-center shadow-md"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-white p-2.5 rounded-full hover:bg-accent-glow transition-colors disabled:opacity-40 disabled:hover:bg-accent flex items-center justify-center shadow-md dark:shadow-accent/20"
           >
             {disabled ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5 ml-0.5" />}
           </button>

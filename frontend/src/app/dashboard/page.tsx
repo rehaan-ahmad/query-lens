@@ -8,6 +8,7 @@ import QueryHistory from "@/components/query/QueryHistory";
 import QueryInput from "@/components/query/QueryInput";
 import ResponsePanel from "@/components/query/ResponsePanel";
 import ChartRouter from "@/components/charts/ChartRouter";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
@@ -58,34 +59,40 @@ export default function Dashboard() {
 
   if (isAuthenticated === false) {
     return (
-     <div className="h-screen flex items-center justify-center p-8 bg-cream text-ink text-center">
-       <p>You must be logged in. Redirecting...</p>
+     <div className="h-screen flex items-center justify-center p-8 text-center bg-background">
+       <p className="text-muted">You must be logged in. Redirecting...</p>
      </div>
     );
   }
 
   return (
-    <div className="flex h-screen w-full bg-cream overflow-hidden antialiased">
+    <div className="flex h-screen w-full bg-background overflow-hidden antialiased transition-colors duration-300">
       {/* LEFT SIDEBAR: History */}
-      <div className="hidden lg:block w-[280px] xl:w-[320px] flex-shrink-0 z-20 shadow-[4px_0_24px_-15px_rgba(0,0,0,0.1)]">
-        <QueryHistory 
-          items={history} 
-          loading={historyLoading} 
-          onSelect={(q) => handleQuerySubmit(q)} 
-        />
+      <div className="hidden lg:block w-[280px] xl:w-[320px] flex-shrink-0 z-20 shadow-[4px_0_24px_-15px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_24px_-15px_rgba(0,0,0,0.5)] border-r border-black/5 dark:border-white/5 bg-surface/50 backdrop-blur-md">
+        <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+          <h1 className="font-serif text-xl tracking-tight font-bold">QueryLens.</h1>
+          <ThemeToggle />
+        </div>
+        <div className="h-[calc(100vh-65px)] overflow-y-auto w-full">
+          <QueryHistory 
+            items={history} 
+            loading={historyLoading} 
+            onSelect={(q) => handleQuerySubmit(q)} 
+          />
+        </div>
       </div>
 
       {/* CENTER: Chart Display */}
       <div className="flex-1 flex flex-col relative z-0">
-        <div className="flex-1 p-8 rounded-tl-3xl bg-surface/50 border-t border-l border-white/50 shadow-inner overflow-hidden flex flex-col items-center justify-center">
+        <div className="flex-1 p-8 rounded-tl-3xl bg-surface/40 dark:bg-surface/20 backdrop-blur-sm border-t border-l border-white/50 dark:border-white/10 shadow-inner overflow-hidden flex flex-col items-center justify-center">
           {error && phase !== "querying" && phase !== "delivering" ? (
-             <div className="text-red-500 max-w-lg text-center bg-red-50 p-6 rounded-2xl border border-red-100">
+             <div className="text-red-500 dark:text-red-400 max-w-lg text-center bg-red-50 dark:bg-red-500/10 p-6 rounded-2xl border border-red-100 dark:border-red-500/20 backdrop-blur-sm">
                <h3 className="font-serif text-xl mb-2">Error</h3>
                <p>{error}</p>
              </div>
           ) : phase === "idle" ? (
             <div className="flex flex-col items-center text-center opacity-40">
-              <div className="w-24 h-24 mb-6 text-navy/20">
+              <div className="w-24 h-24 mb-6 text-foreground/20">
                  {/* Empty State Icon */}
                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -93,20 +100,20 @@ export default function Dashboard() {
                    <line x1="9" y1="21" x2="9" y2="9"></line>
                  </svg>
               </div>
-              <h2 className="font-sans font-light text-2xl text-navy">No Insight Active</h2>
+              <h2 className="font-sans font-light text-2xl">No Insight Active</h2>
               <p className="mt-2 text-sm max-w-xs">Ask a question below to magically generate a visualization from the BMW catalogue.</p>
             </div>
           ) : (phase === "ready" && result) ? (
-            <div className="w-full h-full animate-in fade-in zoom-in-95 duration-700 ease-out flex flex-col">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-serif text-navy">
-                  Visualization: <span className="capitalize">{result.chart_type?.replace('_', ' ')}</span>
+            <div className="w-full h-full animate-in fade-in zoom-in-95 duration-700 ease-out flex flex-col pt-4">
+              <div className="flex justify-between items-center mb-6 px-2">
+                <h2 className="text-2xl font-serif tracking-tight">
+                  Visualization: <span className="capitalize text-accent">{result.chart_type?.replace('_', ' ')}</span>
                 </h2>
-                <div className="text-xs font-mono bg-cream px-3 py-1 rounded text-muted uppercase tracking-wider border border-muted/20">
+                <div className="text-xs font-mono bg-background px-3 py-1 rounded text-muted uppercase tracking-wider border border-black/10 dark:border-white/10">
                   {result.data?.length || 0} Records
                 </div>
               </div>
-              <div className="flex-1 bg-surface rounded-2xl p-6 shadow-sm border border-muted/20">
+              <div className="flex-1 bg-surface rounded-2xl p-6 shadow-sm border border-black/5 dark:border-white/10 flex flex-col min-h-0 relative">
                  <ChartRouter 
                    chartType={result.chart_type} 
                    data={result.data} 
@@ -117,7 +124,7 @@ export default function Dashboard() {
             </div>
           ) : (
              <div className="w-full h-full flex items-center justify-center">
-               <div className="w-16 h-16 border-4 border-navy border-t-transparent rounded-full animate-spin opacity-20"></div>
+               <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin opacity-40"></div>
              </div>
           )}
         </div>
@@ -127,7 +134,7 @@ export default function Dashboard() {
       </div>
 
       {/* RIGHT SIDEBAR: AI Response & Animations */}
-      <div className="hidden lg:block w-[360px] xl:w-[400px] flex-shrink-0 z-20 shadow-[-4px_0_24px_-15px_rgba(0,0,0,0.1)]">
+      <div className="hidden lg:block w-[360px] xl:w-[400px] flex-shrink-0 z-20 shadow-[-4px_0_24px_-15px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_24px_-15px_rgba(0,0,0,0.5)] border-l border-black/5 dark:border-white/5 bg-surface/50 backdrop-blur-md">
         <ResponsePanel 
           phase={phase} 
           queryEcho={activeQuery}

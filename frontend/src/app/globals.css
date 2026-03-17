@@ -3,8 +3,28 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --surface: #ffffff;
+    --accent: #3b82f6;
+    --accent-glow: #60a5fa;
+    --ink: #1e293b;
+    --muted: #94a3b8;
+  }
+
+  .dark {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --surface: rgba(30, 41, 59, 0.7);
+    --accent: #3b82f6;
+    --accent-glow: #8b5cf6;
+    --ink: #f8fafc;
+    --muted: #64748b;
+  }
+
   body {
-    @apply bg-cream text-ink font-sans antialiased selection:bg-olive selection:text-white;
+    @apply bg-[var(--background)] text-[var(--foreground)] font-sans antialiased selection:bg-[var(--accent)] selection:text-white transition-colors duration-300;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -14,6 +34,21 @@
   code, pre {
     @apply font-mono;
   }
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-600;
 }
 
 @layer utilities {

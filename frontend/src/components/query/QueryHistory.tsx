@@ -33,10 +33,10 @@ const getChartIcon = (type: string) => {
 export default function QueryHistory({ items, onSelect, loading }: QueryHistoryProps) {
   const { logout } = useAuth();
   return (
-    <div className="w-full h-full flex flex-col bg-surface border-r border-muted/20">
-      <div className="p-6 border-b border-muted/20 bg-cream/30">
-        <h2 className="font-serif text-lg text-ink flex items-center mb-1">
-          <History className="w-5 h-5 mr-2 text-olive" />
+    <div className="w-full h-full flex flex-col pt-2">
+      <div className="p-4 mx-2 rounded-xl border border-black/5 dark:border-white/5 bg-surface/30 dark:bg-surface/10 mb-2">
+        <h2 className="font-serif text-lg flex items-center mb-1 font-semibold">
+          <History className="w-5 h-5 mr-2 text-accent" />
           Session History
         </h2>
         <p className="text-xs text-muted">Recent insights for this session</p>
@@ -56,15 +56,15 @@ export default function QueryHistory({ items, onSelect, loading }: QueryHistoryP
             <div 
               key={item.id}
               onClick={() => onSelect(item.user_query)}
-              className="group p-4 bg-cream/30 hover:bg-cream border border-transparent hover:border-olive/30 rounded-xl cursor-pointer transition-all duration-200"
+              className="group p-4 bg-surface/40 dark:bg-surface/20 hover:bg-surface/80 dark:hover:bg-surface/50 border border-black/5 dark:border-white/5 hover:border-accent/30 rounded-xl cursor-pointer transition-all duration-200 shadow-sm"
             >
-              <p className="text-sm text-ink mb-3 line-clamp-2 leading-relaxed transition-colors group-hover:text-navy">
+              <p className="text-sm text-foreground mb-3 line-clamp-2 leading-relaxed transition-colors group-hover:text-accent font-medium">
                 &quot;{item.user_query}&quot;
               </p>
               
               <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center text-muted font-medium bg-surface px-2 py-1 rounded-md shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-muted/10">
-                  <span className="mr-1.5 text-olive/80">{getChartIcon(item.chart_type)}</span>
+                <span className="flex items-center text-muted font-medium bg-background px-2 py-1 rounded-md shadow-sm border border-black/5 dark:border-white/5">
+                  <span className="mr-1.5 text-accent/80">{getChartIcon(item.chart_type)}</span>
                   <span className="capitalize">{item.chart_type.replace('_', ' ')}</span>
                 </span>
                 
@@ -77,16 +77,16 @@ export default function QueryHistory({ items, onSelect, loading }: QueryHistoryP
         )}
       </div>
 
-      <div className="p-4 border-t border-muted/20 bg-surface flex flex-col space-y-2">
-        <Link href="/upload" className="flex items-center text-sm p-2 rounded hover:bg-cream text-muted hover:text-navy transition-colors font-medium">
-          <Upload className="w-4 h-4 mr-3 text-olive/80" />
+      <div className="p-4 mx-2 mb-2 rounded-xl bg-surface/30 dark:bg-surface/10 border border-black/5 dark:border-white/5 flex flex-col space-y-1 mt-auto">
+        <Link href="/upload" className="flex items-center text-sm p-2 rounded-lg hover:bg-surface/80 dark:hover:bg-surface/40 text-muted hover:text-foreground transition-colors font-medium">
+          <Upload className="w-4 h-4 mr-3 text-accent/80" />
           Upload Data
         </Link>
-        <Link href="/history" className="flex items-center text-sm p-2 rounded hover:bg-cream text-muted hover:text-navy transition-colors font-medium">
-          <List className="w-4 h-4 mr-3 text-olive/80" />
+        <Link href="/history" className="flex items-center text-sm p-2 rounded-lg hover:bg-surface/80 dark:hover:bg-surface/40 text-muted hover:text-foreground transition-colors font-medium">
+          <List className="w-4 h-4 mr-3 text-accent/80" />
           Full History
         </Link>
-        <button onClick={logout} className="flex items-center text-sm p-2 rounded hover:bg-red-50 text-red-500 hover:text-red-700 transition-colors w-full text-left font-medium">
+        <button onClick={logout} className="flex items-center text-sm p-2 rounded-lg hover:bg-red-500/10 text-red-500 hover:text-red-600 transition-colors w-full text-left font-medium">
           <LogOut className="w-4 h-4 mr-3 opacity-80" />
           Logout
         </button>

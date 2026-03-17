@@ -25,26 +25,26 @@ export default function ScatterChartComponent({ data }: { data: Record<string, u
         <ScatterChart
           margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--muted)" strokeOpacity={0.2} />
           <XAxis 
             type="number" 
             dataKey={xKey} 
             name={xKey} 
-            tick={{ fill: '#3b3c36', fontSize: 12 }}
-            axisLine={{ stroke: '#b2b49c' }}
+            tick={{ fill: 'var(--foreground)', fontSize: 12, opacity: 0.8 }}
+            axisLine={{ stroke: 'var(--muted)', opacity: 0.3 }}
           />
           <YAxis 
             type="number" 
             dataKey={yKey} 
             name={yKey} 
-            tick={{ fill: '#3b3c36', fontSize: 12 }}
-            axisLine={{ stroke: '#b2b49c' }}
+            tick={{ fill: 'var(--foreground)', fontSize: 12, opacity: 0.8 }}
+            axisLine={{ stroke: 'var(--muted)', opacity: 0.3 }}
           />
           <ZAxis range={[60, 60]} /> 
           <Tooltip 
-            cursor={{ strokeDasharray: '3 3' }}
-            contentStyle={{ backgroundColor: '#f2eee3', borderRadius: '8px', border: '1px solid #b2b49c', color: '#3b3c36' }}
-            itemStyle={{ color: '#3b3c36' }}
+            cursor={{ strokeDasharray: '3 3', stroke: 'var(--muted)' }}
+            contentStyle={{ backgroundColor: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--muted)', color: 'var(--foreground)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+            itemStyle={{ color: 'var(--foreground)' }}
           />
           <Legend wrapperStyle={{ paddingTop: "20px" }} />
           <Scatter 
