@@ -12,13 +12,14 @@ export type QueryResponseData = {
 
 export function useQuery() {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<QueryResponseData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const submitQuery = async (query: string, sessionId?: string) => {
+  const submitQuery = async (
+    query: string,
+    sessionId?: string
+  ): Promise<QueryResponseData | null> => {
     setLoading(true);
     setError(null);
-    setResult(null);
 
     try {
       const payload: { query: string; session_id?: string } = { query };
@@ -26,30 +27,38 @@ export function useQuery() {
 
       const res = await api.post("/api/query", payload);
       if (res.data?.type === "cannot_answer") {
-        setResult({
+        const result: QueryResponseData = {
           chart_type: "cannot_answer",
-          explanation: res.data?.message || "I could not find data to answer that question from the available inventory."
-        });
+          explanation:
+            res.data?.message ||
+            "I could not find data to answer that question from the available inventory.",
+        };
+        return result;
       } else {
-        setResult(res.data);
+        return res.data as QueryResponseData;
       }
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
         if (err.response.data?.type === "cannot_answer") {
-           setResult({ 
-             chart_type: "cannot_answer", 
-             explanation: err.response.data?.message || "I could not find data to answer that question from the available inventory." 
-           });
+          return {
+            chart_type: "cannot_answer",
+            explanation:
+              err.response.data?.message ||
+              "I could not find data to answer that question from the available inventory.",
+          };
         } else {
-           setError(err.response.data?.detail || "Error connecting to the server.");
+          setError(
+            err.response.data?.detail || "Error connecting to the server."
+          );
         }
       } else {
         setError("An unexpected error occurred.");
       }
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
-  return { submitQuery, loading, result, error, setResult };
+  return { submitQuery, loading, error };
 }

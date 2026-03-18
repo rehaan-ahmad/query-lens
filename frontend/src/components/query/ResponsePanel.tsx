@@ -28,7 +28,7 @@ export default function ResponsePanel({
       const messages = [
         "Analysing your question...",
         "Generating secure SQL...",
-        "Querying BMW inventory...",
+        "Querying your data...",
         "Preparing visualisation...",
       ];
       let i = 0;
@@ -66,7 +66,7 @@ export default function ResponsePanel({
           <div className="bg-surface/30 dark:bg-surface/10 p-6 rounded-2xl border border-black/5 dark:border-white/5 backdrop-blur-sm">
             <h3 className="text-xl font-serif mb-2 font-semibold tracking-tight">QueryLens AI</h3>
             <p className="text-muted text-sm leading-relaxed">
-              I can help you explore the BMW inventory data. Start by typing a question below.
+              I can help you explore your data. Start by typing a question below.
             </p>
           </div>
         )}

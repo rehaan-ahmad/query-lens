@@ -32,7 +32,10 @@ router = APIRouter(prefix="/api/query", tags=["query"])
 logger = get_logger(__name__)
 
 
-def _record_history(session_id: str, user_query: str, chart_type: str) -> None:
+def _record_history(
+    session_id: str, user_query: str, chart_type: str,
+    generated_sql: str = "", explanation: str = ""
+) -> None:
     """Persist a query to the history table (best-effort, never raises)."""
     try:
         try:
@@ -45,13 +48,16 @@ def _record_history(session_id: str, user_query: str, chart_type: str) -> None:
         try:
             conn.execute(
                 """
-                INSERT INTO query_history (session_id, user_query, chart_type, created_at)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO query_history
+                    (session_id, user_query, chart_type, generated_sql, explanation, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
                     session_id or "anonymous",
                     user_query[:500],
                     chart_type,
+                    generated_sql[:2000],
+                    explanation[:500],
                     datetime.now(timezone.utc).isoformat(),
                 ),
             )
@@ -60,6 +66,37 @@ def _record_history(session_id: str, user_query: str, chart_type: str) -> None:
             conn.close()
     except Exception:
         logger.warning("Failed to record query history (non-critical)")
+
+
+def _load_conversation_context(session_id: str) -> list[dict]:
+    """Load the last 5 conversation turns for a session (for follow-up context)."""
+    if not session_id:
+        return []
+    try:
+        db_path = os.environ.get("DATABASE_PATH", "")
+        if not db_path:
+            return []
+        conn = sqlite3.connect(db_path)
+        try:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT user_query, generated_sql FROM query_history "
+                "WHERE session_id = ? AND generated_sql != '' "
+                "ORDER BY created_at DESC LIMIT 5",
+                (session_id,),
+            )
+            rows = cursor.fetchall()
+            # Reverse so oldest is first (chronological order)
+            return [
+                {"question": row["user_query"], "sql": row["generated_sql"]}
+                for row in reversed(rows)
+            ]
+        finally:
+            conn.close()
+    except Exception:
+        logger.warning("Failed to load conversation context (non-critical)")
+        return []
 
 
 @router.post(
@@ -90,11 +127,18 @@ async def submit_query(
         len(clean_query),
     )
 
-    # -- 2. NL → SQL via Gemini (use uploaded schema if available) --
+    # -- 2. NL → SQL via Gemini (use uploaded schema + conversation context) --
     schema_override = get_upload_schema(body.session_id or "")
+    conversation_context = _load_conversation_context(body.session_id or "")
     if schema_override:
         logger.info("Using uploaded table schema for session=%s", body.session_id)
-    result = nl_to_sql(clean_query, schema_override=schema_override)
+    if conversation_context:
+        logger.info("Loaded %d conversation turns for follow-up context", len(conversation_context))
+    result = nl_to_sql(
+        clean_query,
+        schema_override=schema_override,
+        conversation_history=conversation_context,
+    )
 
     if "error" in result:
         if result["error"] == "cannot_answer":
@@ -135,8 +179,8 @@ async def submit_query(
     columns = list(data[0].keys()) if data else []
     chart_type = select_chart(sql, data)
 
-    # -- 6. Record to history --
-    _record_history(body.session_id or "", clean_query, chart_type)
+    # -- 6. Record to history (including generated SQL for follow-up context) --
+    _record_history(body.session_id or "", clean_query, chart_type, generated_sql=sql, explanation=explanation)
 
     # -- 7. Return Pydantic response (AthenaGuard §3: never raw rows) --
     return QueryResponse(

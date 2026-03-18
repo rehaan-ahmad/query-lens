@@ -62,9 +62,21 @@ def init_db() -> None:
                 session_id   TEXT    NOT NULL,
                 user_query   TEXT    NOT NULL,
                 chart_type   TEXT    NOT NULL,
+                generated_sql TEXT   DEFAULT '',
+                explanation  TEXT    DEFAULT '',
                 created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
             )
         """)
+
+        # Migration: add columns if upgrading from older schema
+        try:
+            cursor.execute("ALTER TABLE query_history ADD COLUMN generated_sql TEXT DEFAULT ''")
+        except Exception:
+            pass  # Column already exists
+        try:
+            cursor.execute("ALTER TABLE query_history ADD COLUMN explanation TEXT DEFAULT ''")
+        except Exception:
+            pass  # Column already exists
 
         conn.commit()
         logger.info("Database initialised at: %s", db_path)

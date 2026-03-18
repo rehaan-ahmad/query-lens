@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@/hooks/useQuery";
 import { useHistory } from "@/hooks/useHistory";
@@ -7,17 +7,20 @@ import { v4 as uuidv4 } from "uuid";
 import QueryHistory from "@/components/query/QueryHistory";
 import QueryInput from "@/components/query/QueryInput";
 import ResponsePanel from "@/components/query/ResponsePanel";
-import ChartRouter from "@/components/charts/ChartRouter";
-import LoadingCube from "@/components/query/LoadingCube";
+import ChatThread, { ChatMessage } from "@/components/query/ChatThread";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
   const [sessionId, setSessionId] = useState<string>("");
-  const { submitQuery, result, error } = useQuery();
+  const { submitQuery, loading: queryLoading, error } = useQuery();
   const { history, fetchHistory, loading: historyLoading } = useHistory(sessionId);
-  const [phase, setPhase] = useState<"idle" | "querying" | "delivering" | "ready">("idle");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [activeQuery, setActiveQuery] = useState("");
+  const [phase, setPhase] = useState<"idle" | "querying" | "delivering" | "ready">("idle");
+
+  // Latest result for ResponsePanel display
+  const [latestExplanation, setLatestExplanation] = useState<string | undefined>();
 
   useEffect(() => {
     // Generate session ID if not exists
@@ -35,28 +38,45 @@ export default function Dashboard() {
     }
   }, [sessionId, isAuthenticated, fetchHistory]);
 
-  const handleQuerySubmit = async (queryText: string) => {
+  const handleQuerySubmit = useCallback(async (queryText: string) => {
     setActiveQuery(queryText);
     setPhase("querying");
-    
-    // Slight artificial delay to allow animation act 1 to play out (2000ms)
-    // In production we would just await the real promise, but adding min duration for UX
+    setLatestExplanation(undefined);
+
+    // Add user message to the chat
+    const userMsg: ChatMessage = {
+      id: uuidv4(),
+      role: "user",
+      content: queryText,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+
+    // Submit query with minimum delay for animation UX
     const startTime = Date.now();
-    await submitQuery(queryText, sessionId);
+    const result = await submitQuery(queryText, sessionId);
     const elapsed = Date.now() - startTime;
-    const remainingDelay = Math.max(0, 2000 - elapsed);
-    
+    const remainingDelay = Math.max(0, 1500 - elapsed);
+
     setTimeout(() => {
-      // Act 2: Delivering (squares spread out, color shift)
       setPhase("delivering");
-      
-      // Act 3: Ready (fade in chart and explanation)
+
       setTimeout(() => {
+        // Add assistant message with chart data
+        const assistantMsg: ChatMessage = {
+          id: uuidv4(),
+          role: "assistant",
+          content: result?.explanation || "",
+          queryData: result || undefined,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+        setLatestExplanation(result?.explanation);
         setPhase("ready");
-        fetchHistory(); // Refresh sidebar
-      }, 1000);
+        fetchHistory();
+      }, 800);
     }, remainingDelay);
-  };
+  }, [sessionId, submitQuery, fetchHistory]);
 
   if (isAuthenticated === false) {
     return (
@@ -83,50 +103,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* CENTER: Chart Display */}
+      {/* CENTER: Chat Thread */}
       <div className="flex-1 flex flex-col relative z-0">
-        <div className="flex-1 p-8 rounded-tl-3xl bg-surface/40 dark:bg-surface/20 backdrop-blur-sm border-t border-l border-white/50 dark:border-white/10 shadow-inner overflow-hidden flex flex-col items-center justify-center">
+        <div className="flex-1 bg-surface/40 dark:bg-surface/20 backdrop-blur-sm border-t border-l border-white/50 dark:border-white/10 shadow-inner overflow-hidden">
           {error && phase !== "querying" && phase !== "delivering" ? (
-             <div className="text-red-500 dark:text-red-400 max-w-lg text-center bg-red-50 dark:bg-red-500/10 p-6 rounded-2xl border border-red-100 dark:border-red-500/20 backdrop-blur-sm">
-               <h3 className="font-serif text-xl mb-2">Error</h3>
-               <p>{error}</p>
+             <div className="h-full flex items-center justify-center p-8">
+               <div className="text-red-500 dark:text-red-400 max-w-lg text-center bg-red-50 dark:bg-red-500/10 p-6 rounded-2xl border border-red-100 dark:border-red-500/20 backdrop-blur-sm">
+                 <h3 className="font-serif text-xl mb-2">Error</h3>
+                 <p>{error}</p>
+               </div>
              </div>
-          ) : phase === "idle" ? (
-            <div className="flex flex-col items-center text-center opacity-40">
-              <div className="w-24 h-24 mb-6 text-foreground/20">
-                 {/* Empty State Icon */}
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                   <line x1="3" y1="9" x2="21" y2="9"></line>
-                   <line x1="9" y1="21" x2="9" y2="9"></line>
-                 </svg>
-              </div>
-              <h2 className="font-sans font-light text-2xl">No Insight Active</h2>
-              <p className="mt-2 text-sm max-w-xs">Ask a question below to generate a visualization from your dataset.</p>
-            </div>
-          ) : (phase === "ready" && result) ? (
-            <div className="w-full h-full animate-in fade-in zoom-in-95 duration-700 ease-out flex flex-col pt-4">
-              <div className="flex justify-between items-center mb-6 px-2">
-                <h2 className="text-2xl font-serif tracking-tight">
-                  Visualization: <span className="capitalize text-accent">{result.chart_type?.replace('_', ' ')}</span>
-                </h2>
-                <div className="text-xs font-mono bg-background px-3 py-1 rounded text-muted uppercase tracking-wider border border-black/10 dark:border-white/10">
-                  {result.data?.length || 0} Records
-                </div>
-              </div>
-              <div className="flex-1 bg-surface rounded-2xl p-6 shadow-sm border border-black/5 dark:border-white/10 flex flex-col min-h-0 relative">
-                 <ChartRouter 
-                   chartType={result.chart_type} 
-                   data={result.data} 
-                   columns={result.columns}
-                   explanation={result.explanation} 
-                 />
-              </div>
-            </div>
           ) : (
-             <div className="w-full h-full flex items-center justify-center">
-               <LoadingCube />
-             </div>
+            <ChatThread messages={messages} loading={queryLoading && phase === "querying"} />
           )}
         </div>
 
@@ -139,7 +127,7 @@ export default function Dashboard() {
         <ResponsePanel 
           phase={phase} 
           queryEcho={activeQuery}
-          explanation={result?.explanation}
+          explanation={latestExplanation}
         />
       </div>
     </div>

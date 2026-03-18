@@ -170,9 +170,15 @@ def _get_gemini_client() -> genai.GenerativeModel:
 # Core translation function
 # ---------------------------------------------------------------------------
 
-def nl_to_sql(user_query: str, schema_override: str | None = None) -> dict[str, Any]:
+def nl_to_sql(user_query: str, schema_override: str | None = None, conversation_history: list[dict] | None = None) -> dict[str, Any]:
     """
     Translate a natural-language question into a parameterized SQLite SELECT.
+
+    Parameters
+    ----------
+    user_query           : The natural language question from the user.
+    schema_override      : Optional schema description for uploaded tables.
+    conversation_history : Optional list of previous turns [{"question": ..., "sql": ...}, ...].
 
     Returns
     -------
@@ -191,10 +197,24 @@ def nl_to_sql(user_query: str, schema_override: str | None = None) -> dict[str, 
         model = _get_gemini_client()
 
         if schema_override:
-            dynamic_prompt = _build_dynamic_prompt(schema_override)
-            prompt = f"{dynamic_prompt}\n\nQuestion: {user_query}\nOutput:"
+            base_prompt = _build_dynamic_prompt(schema_override)
         else:
-            prompt = f"{SYSTEM_PROMPT}\n\nQuestion: {user_query}\nOutput:"
+            base_prompt = SYSTEM_PROMPT
+
+        # Build conversation context block
+        context_block = ""
+        if conversation_history:
+            turns = []
+            for i, turn in enumerate(conversation_history[-5:], 1):
+                turns.append(f"  Q{i}: \"{turn['question']}\" → SQL: {turn['sql']}")
+            context_block = (
+                "\n\nCONVERSATION CONTEXT (previous questions in this session — "
+                "use these to resolve references like 'those', 'that', 'filter further', etc.):\n"
+                + "\n".join(turns)
+                + "\n"
+            )
+
+        prompt = f"{base_prompt}{context_block}\n\nQuestion: {user_query}\nOutput:"
         response = model.generate_content(prompt)
         raw = response.text.strip()
         logger.info("Gemini raw response received (length=%d)", len(raw))

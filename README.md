@@ -142,4 +142,16 @@ No code changes or schema definitions are required — just drag, drop, and ask 
 
 ---
 
+## Follow-Up Chat
+
+QueryLens supports **multi-turn conversational queries**. Users can ask follow-up questions that reference previous answers:
+
+1. Ask: *"What is the average price by fuel type?"*
+2. Follow up: *"Now show me only diesel"* — Gemini resolves "diesel" from context
+3. Follow up: *"What about the mileage for those?"* — Gemini knows "those" = diesel
+
+**How it works:** Each query's generated SQL is stored in `query_history`. Before each new query, the backend loads the last 5 Q→SQL turns and injects them into the Gemini prompt as conversation context.
+
+---
+
 *Ship fast. Ship secure. Ship QueryLens.*
