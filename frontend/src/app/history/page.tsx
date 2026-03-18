@@ -34,12 +34,12 @@ export default function HistoryPage() {
           
           <div className="flex items-center justify-between mb-16">
             <div>
-              <Link href="/dashboard" className="text-muted hover:text-navy flex items-center text-sm font-medium transition-colors mb-6">
+              <Link href="/dashboard" className="text-muted hover:text-foreground flex items-center text-sm font-medium transition-colors mb-6">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Link>
-              <h1 className="text-4xl font-serif text-navy flex items-center">
-                <History className="w-8 h-8 mr-4 text-olive" />
+              <h1 className="text-4xl font-serif text-foreground flex items-center">
+                <History className="w-8 h-8 mr-4 text-accent" />
                 Session History
               </h1>
               <p className="text-muted text-lg mt-2 font-light">
@@ -55,7 +55,7 @@ export default function HistoryPage() {
             <div className="space-y-8 z-10 relative">
               {loading && history.length === 0 ? (
                 <div className="pl-24 py-8 text-muted animate-pulse font-mono flex items-center">
-                  <div className="w-4 h-4 border-2 border-olive border-t-transparent rounded-full animate-spin mr-3"></div>
+                  <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin mr-3"></div>
                   Loading history...
                 </div>
               ) : history.length === 0 ? (
@@ -78,19 +78,19 @@ export default function HistoryPage() {
                         </span>
                         
                         <span className={`text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider
-                          ${item.chart_type === 'cannot_answer' ? 'bg-red-50 text-red-600' : 'bg-olive/10 text-olive'}`}>
+                          ${item.chart_type === 'cannot_answer' ? 'bg-red-50 text-red-600' : 'bg-accent/10 text-accent'}`}>
                           {item.chart_type.replace('_', ' ')}
                         </span>
                       </div>
                       
-                      <h3 className="text-2xl font-serif text-navy leading-snug mb-8">
+                      <h3 className="text-2xl font-serif text-foreground leading-snug mb-8">
                         &quot;{item.user_query}&quot;
                       </h3>
 
                       <div className="border-t border-muted/10 pt-6 flex justify-end">
                         <Link 
                           href={`/dashboard?replay=${encodeURIComponent(item.user_query)}`}
-                          className="flex items-center text-sm font-medium text-navy hover:text-olive transition-colors"
+                          className="flex items-center text-sm font-medium text-foreground hover:text-accent transition-colors"
                         >
                           <PlayCircle className="w-4 h-4 mr-2" />
                           Replay in Dashboard

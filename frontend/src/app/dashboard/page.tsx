@@ -102,7 +102,7 @@ export default function Dashboard() {
                  </svg>
               </div>
               <h2 className="font-sans font-light text-2xl">No Insight Active</h2>
-              <p className="mt-2 text-sm max-w-xs">Ask a question below to magically generate a visualization from the BMW catalogue.</p>
+              <p className="mt-2 text-sm max-w-xs">Ask a question below to generate a visualization from your dataset.</p>
             </div>
           ) : (phase === "ready" && result) ? (
             <div className="w-full h-full animate-in fade-in zoom-in-95 duration-700 ease-out flex flex-col pt-4">

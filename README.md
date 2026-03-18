@@ -15,7 +15,7 @@ User types NL query
         ↓  POST /api/query (JWT)
    [Backend — FastAPI]
         ↓
-   [Gemini 1.5 Flash] — NL → SQL (parameterized)
+   [Gemini 2.5 Flash] — NL → SQL (parameterized)
         ↓
    [SQLite — querylens.db] — safe parameterized execution
         ↓
@@ -125,6 +125,20 @@ QueryLens implements the **AthenaGuard** security model:
 - ✅ Input sanitization (bleach) on all user text
 - ✅ API key + secrets never logged or committed
 - ✅ gitleaks pre-commit hook for secrets scanning
+- ✅ CSV upload: MIME type + magic bytes validation, column name sanitization
+
+---
+
+## Custom CSV Upload
+
+QueryLens supports **data-agnostic** querying. Users can upload any `.csv` file via the **Upload Data** page, and the system will:
+
+1. Parse and sanitize all column names
+2. Load the data into a session-scoped SQLite table
+3. Automatically build a dynamic schema description
+4. Route all subsequent Gemini queries against the uploaded table
+
+No code changes or schema definitions are required — just drag, drop, and ask questions!
 
 ---
 

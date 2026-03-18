@@ -4,6 +4,8 @@ AthenaGuard §4 (XSS): Sanitize all user-supplied text with bleach before
 storing or returning to the frontend.
 """
 
+import re
+
 import bleach
 from utils.logger import get_logger
 
@@ -37,7 +39,6 @@ def sanitize_column_name(name: str) -> str:
     - Max 64 characters
     AthenaGuard §7 (CSV Upload Security)
     """
-    import re
     name = name.strip()
     name = re.sub(r"[^a-zA-Z0-9_]", "_", name)
     name = re.sub(r"_+", "_", name)  # Collapse repeated underscores

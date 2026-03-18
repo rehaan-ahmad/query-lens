@@ -25,7 +25,7 @@ export default function Connector({ phase }: { phase: Phase }) {
         targets: squaresRef.current,
         translateY: 0,
         scale: 1,
-        backgroundColor: "#3e4260", // navy
+        backgroundColor: "var(--muted)",
         opacity: 0.3,
         duration: 500,
         easing: 'easeOutExpo'
@@ -39,7 +39,7 @@ export default function Connector({ phase }: { phase: Phase }) {
           { value: -10, duration: 400, easing: 'easeOutQuad' },
           { value: 0, duration: 400, easing: 'easeInQuad' }
         ],
-        backgroundColor: "#3e4260", // navy
+        backgroundColor: "var(--accent)",
         opacity: 0.8,
         delay: anime.stagger(150),
         loop: true
@@ -56,7 +56,7 @@ export default function Connector({ phase }: { phase: Phase }) {
         targets: squaresRef.current,
         scale: [1, 1.5, 1],
         translateX: (el: HTMLElement, i: number) => i === 0 ? -15 : i === 2 ? 15 : 0,
-        backgroundColor: "#778667", // olive
+        backgroundColor: "var(--accent-glow)",
         opacity: 1,
         duration: 600,
       }).add({

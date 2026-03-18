@@ -51,7 +51,7 @@ export default function UploadPage() {
     <PageTransition>
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center py-16 px-6 relative">
         <div className="w-full max-w-4xl absolute top-8 left-8 flex items-center">
-          <Link href="/dashboard" className="text-muted hover:text-navy flex items-center text-sm font-medium transition-colors">
+          <Link href="/dashboard" className="text-muted hover:text-foreground flex items-center text-sm font-medium transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Link>

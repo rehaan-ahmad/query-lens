@@ -42,7 +42,7 @@ export default function CSVPreview({ file }: CSVPreviewProps) {
   return (
     <div className="w-full bg-surface rounded-xl border border-muted/20 overflow-hidden shadow-sm">
       <div className="bg-surface/50 px-4 py-3 border-b border-muted/20 flex justify-between items-center">
-        <h4 className="text-sm font-semibold text-navy">Data Preview</h4>
+        <h4 className="text-sm font-semibold text-foreground">Data Preview</h4>
         <span className="text-xs font-mono text-muted bg-surface px-2 py-0.5 rounded border border-muted/10">
           Showing first {data.length} rows
         </span>
