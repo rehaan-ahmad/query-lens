@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Send, Loader2 } from "lucide-react";
 import VoiceInput from "./VoiceInput";
 
@@ -12,14 +12,14 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
   const [text, setText] = useState("");
   const maxLength = 500;
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = useCallback((e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const q = text.trim();
     if (q && !disabled) {
       onSubmit(q);
       setText("");
     }
-  };
+  }, [text, disabled, onSubmit]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -28,28 +28,36 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
     }
   };
 
-  // Feature 7: Voice input
-  // onInterim → streams live words into the input field
-  // onFinal   → auto-submits the query when mic is turned off
-  const handleVoiceInterim = (text: string) => {
-    setText(text.slice(0, maxLength));
-  };
+  // Voice: stream live words into the input field
+  const handleVoiceInterim = useCallback((interim: string) => {
+    setText(interim.slice(0, maxLength));
+  }, []);
 
-  const handleVoiceFinal = (text: string) => {
-    const q = text.trim().slice(0, maxLength);
+  // Voice: auto-submit the final transcript when mic stops
+  const handleVoiceFinal = useCallback((transcript: string) => {
+    const q = transcript.trim().slice(0, maxLength);
     if (q && !disabled) {
-      onSubmit(q);
       setText("");
+      onSubmit(q);
     }
-  };
+  }, [disabled, onSubmit]);
 
   return (
     <div className="w-full bg-transparent p-6 z-20 pb-8">
       <div className="max-w-4xl mx-auto relative flex items-center gap-2">
-        {/* Feature 7: Voice mic button */}
-        <VoiceInput onInterim={handleVoiceInterim} onFinal={handleVoiceFinal} disabled={disabled} />
+        {/* Voice mic button — positioned relative so error tooltip anchors correctly */}
+        <div className="relative">
+          <VoiceInput
+            onInterim={handleVoiceInterim}
+            onFinal={handleVoiceFinal}
+            disabled={disabled}
+          />
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full">
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full"
+        >
           <input
             type="text"
             className="w-full bg-surface/80 dark:bg-surface/50 backdrop-blur-md border border-black/10 dark:border-white/10 text-foreground placeholder-muted rounded-full pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -70,11 +78,10 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
         </form>
       </div>
       <div className="max-w-4xl mx-auto flex justify-end mt-1.5 px-6">
-        <span className={`text-xs font-mono font-medium ${text.length >= maxLength ? 'text-red-500' : 'text-muted/60'}`}>
+        <span className={`text-xs font-mono font-medium ${text.length >= maxLength ? "text-red-500" : "text-muted/60"}`}>
           {text.length} / {maxLength}
         </span>
       </div>
     </div>
   );
 }
-

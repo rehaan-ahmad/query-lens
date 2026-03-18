@@ -20,7 +20,7 @@ from slowapi.errors import RateLimitExceeded
 
 from db.init_db import init_db
 from middleware.rate_limiter import limiter
-from models.schemas import HealthResponse, ErrorResponse
+from models.schemas import HealthResponse
 from routers import auth, query, upload
 from utils.logger import get_logger
 

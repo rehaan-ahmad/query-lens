@@ -11,7 +11,6 @@ import asyncio
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from slowapi.errors import RateLimitExceeded
 
 from middleware.auth_middleware import get_current_user, TokenData
 from middleware.rate_limiter import limiter
@@ -175,7 +174,7 @@ async def submit_query(
         data = execute_query(sql, params)
     except ValueError:
         return CannotAnswerResponse()
-    except RuntimeError as exc:
+    except RuntimeError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="A database error occurred. Please try again.",
@@ -189,11 +188,15 @@ async def submit_query(
     chart_type = select_chart(sql, data)
 
     # -- 6. Determine confidence level --
-    confidence_level = "interpreted" if conversation_context else "high"
+    # "interpreted" only when context was actually used (SQL has WHERE clause
+    # hinting a filter derived from a previous turn). "high" otherwise.
+    context_was_used = bool(conversation_context) and "where" in sql.lower()
+    confidence_level = "interpreted" if context_was_used else "high"
 
     # -- 7. Run chart title, key insights, and history write CONCURRENTLY --
     # Each Gemini call is ~1-2s; running in parallel cuts total latency significantly.
-    loop = asyncio.get_event_loop()
+    # asyncio.get_running_loop() is the correct API inside an async function (3.10+).
+    loop = asyncio.get_running_loop()
     chart_title, key_insights, _ = await asyncio.gather(
         loop.run_in_executor(None, generate_chart_title, clean_query, sql),
         loop.run_in_executor(None, generate_key_insights, clean_query, data, sql),

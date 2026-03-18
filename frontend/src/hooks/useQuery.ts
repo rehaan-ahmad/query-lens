@@ -31,32 +31,30 @@ export function useQuery() {
       const payload: { query: string; session_id?: string } = { query };
       if (sessionId) payload.session_id = sessionId;
 
-      const res = await api.post("/api/query", payload);
+      const res = await api.post("/api/query/", payload);
+
+      // CannotAnswerResponse: HTTP 200 with type === "cannot_answer"
       if (res.data?.type === "cannot_answer") {
-        const result: QueryResponseData = {
-          chart_type: "cannot_answer",
-          explanation:
-            res.data?.message ||
-            "I could not find data to answer that question from the available inventory.",
+        return {
+          chart_type:  "cannot_answer",
+          explanation: res.data?.message  ?? "I could not find data to answer that question from the available inventory.",
+          suggestion:  res.data?.suggestion ?? "",
         };
-        return result;
-      } else {
-        return res.data as QueryResponseData;
       }
+
+      return res.data as QueryResponseData;
+
     } catch (err) {
       if (err instanceof AxiosError && err.response) {
-        if (err.response.data?.type === "cannot_answer") {
+        const data = err.response.data;
+        if (data?.type === "cannot_answer") {
           return {
-            chart_type: "cannot_answer",
-            explanation:
-              err.response.data?.message ||
-              "I could not find data to answer that question from the available inventory.",
+            chart_type:  "cannot_answer",
+            explanation: data?.message    ?? "I could not find data to answer that question from the available inventory.",
+            suggestion:  data?.suggestion ?? "",
           };
-        } else {
-          setError(
-            err.response.data?.detail || "Error connecting to the server."
-          );
         }
+        setError(data?.detail || "Error connecting to the server.");
       } else {
         setError("An unexpected error occurred.");
       }

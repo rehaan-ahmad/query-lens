@@ -8,10 +8,10 @@ AthenaGuard §7: No real data rows in the Gemini prompt — schema description o
 
 import os
 import re
-import json
+import threading
 from typing import Any
 
-import google.generativeai as genai
+from google import genai
 
 from utils.logger import get_logger
 from utils.sanitize import sanitize_text
@@ -145,25 +145,39 @@ If not answerable:
 
 
 # ---------------------------------------------------------------------------
-# Gemini client initialisation
+# Gemini client — module-level singleton (thread-safe lazy initialisation)
 # ---------------------------------------------------------------------------
+# Re-instantiating GenerativeModel on every call was wasteful (4 calls/request).
+# We configure genai once and cache the model instance.
 
-def _get_gemini_client() -> genai.GenerativeModel:
+_CLIENT: genai.Client | None = None
+_CLIENT_LOCK = threading.Lock()
+
+
+def _get_client() -> genai.Client:
     """
-    Initialise Gemini client with API key from environment.
+    Return the shared Gemini Client instance, creating it on first call.
     AthenaGuard §6: Fail fast if key is missing. NEVER log the key.
     """
-    try:
-        api_key = os.environ["GEMINI_API_KEY"]
-        if not api_key:
-            raise KeyError
-    except KeyError:
-        raise RuntimeError(
-            "GEMINI_API_KEY environment variable is not set or is empty. "
-            "Obtain a key from https://aistudio.google.com and set it in backend/.env"
-        )
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel(model_name="gemini-1.5-flash")
+    global _CLIENT  # noqa: PLW0603
+    if _CLIENT is not None:
+        return _CLIENT
+    with _CLIENT_LOCK:
+        # Double-checked locking — another thread may have initialised while waiting
+        if _CLIENT is not None:
+            return _CLIENT
+        try:
+            api_key = os.environ["GEMINI_API_KEY"]
+            if not api_key:
+                raise KeyError
+        except KeyError:
+            raise RuntimeError(
+                "GEMINI_API_KEY environment variable is not set or is empty. "
+                "Obtain a key from https://aistudio.google.com and set it in backend/.env"
+            )
+        _CLIENT = genai.Client(api_key=api_key)
+        logger.info("Gemini client singleton initialised.")
+    return _CLIENT
 
 
 # ---------------------------------------------------------------------------
@@ -194,7 +208,7 @@ def nl_to_sql(user_query: str, schema_override: str | None = None, conversation_
       {"error": "api_error", "message": "<safe message>"}
     """
     try:
-        model = _get_gemini_client()
+        client = _get_client()
 
         if schema_override:
             base_prompt = _build_dynamic_prompt(schema_override)
@@ -215,8 +229,11 @@ def nl_to_sql(user_query: str, schema_override: str | None = None, conversation_
             )
 
         prompt = f"{base_prompt}{context_block}\n\nQuestion: {user_query}\nOutput:"
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        raw = response.text.strip() if response.text else ""
         logger.info("Gemini raw response received (length=%d)", len(raw))
 
         # -- Hallucination guard --
@@ -273,14 +290,17 @@ def _generate_explanation(user_query: str, sql: str) -> str:
     AthenaGuard §4: Explanation is sanitized before being sent to the frontend.
     """
     try:
-        model = _get_gemini_client()
+        client = _get_client()
         prompt = (
             f"In one sentence, explain what this SQL query answers "
             f"for the question: '{user_query}'. "
             f"Do not include the SQL in your answer. Be concise and friendly."
         )
-        response = model.generate_content(prompt)
-        return response.text.strip()[:500]  # Cap length
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        return (response.text.strip() if response.text else "")[:500]  # Cap length
     except Exception:
         return "Here are the results for your query."
 
@@ -292,15 +312,18 @@ def generate_chart_title(user_query: str, sql: str) -> str:
     Falls back to the user query if Gemini fails.
     """
     try:
-        model = _get_gemini_client()
+        client = _get_client()
         prompt = (
             f"Generate a short, professional chart title (max 8 words) for a chart "
             f"that answers: '{user_query}'. "
             f"Format: '[Metric] by [Dimension]' or similar. "
             f"Return ONLY the title, no quotes, no punctuation at the end."
         )
-        response = model.generate_content(prompt)
-        title = response.text.strip()[:100]
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        title = (response.text.strip() if response.text else "")[:100]
         return sanitize_text(title) or user_query[:60]
     except Exception:
         return user_query[:60]
@@ -323,7 +346,7 @@ def generate_key_insights(user_query: str, data: list[dict], sql: str) -> list[s
         )
         total_rows = len(data)
 
-        model = _get_gemini_client()
+        client = _get_client()
         prompt = (
             f"You are a data analyst. Given this query result ({total_rows} total rows), "
             f"provide exactly 2-3 concise, insightful bullet points that highlight "
@@ -336,8 +359,11 @@ def generate_key_insights(user_query: str, data: list[dict], sql: str) -> list[s
             f"- Return ONLY the bullet points, one per line, starting with '-'\n"
             f"- No headers, no intro text"
         )
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        raw = response.text.strip() if response.text else ""
         insights = [
             sanitize_text(line.lstrip("-• ").strip())
             for line in raw.split("\n")
@@ -354,7 +380,7 @@ def generate_cannot_answer_suggestion(user_query: str, schema_description: str) 
     that would work with the available schema.
     """
     try:
-        model = _get_gemini_client()
+        client = _get_client()
         prompt = (
             f"A user asked: '{user_query}'\n"
             f"The database schema is:\n{schema_description}\n\n"
@@ -363,8 +389,11 @@ def generate_cannot_answer_suggestion(user_query: str, schema_description: str) 
             f"Format: 'I don\\'t have data about X, but I can help with Y — try asking: [example question]'\n"
             f"Keep it under 150 characters. Return only that sentence."
         )
-        response = model.generate_content(prompt)
-        return sanitize_text(response.text.strip()[:300])
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        return sanitize_text((response.text.strip() if response.text else "")[:300])
     except Exception:
         return ""
 

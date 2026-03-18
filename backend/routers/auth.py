@@ -8,7 +8,6 @@ AthenaGuard §5:
 - Auth attempts logged with IP + timestamp + success/failure (NEVER log passwords)
 """
 
-import os
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status

@@ -32,7 +32,7 @@ User types NL query
 |---|---|
 | Frontend | Next.js 14, React 18, Tailwind CSS (Glassmorphism), `next-themes` (Light/Dark Mode), Recharts, Anime.js |
 | Backend | Python 3.11+, FastAPI, Uvicorn |
-| LLM | Google Gemini 2.5 Flash |
+| LLM | Google Gemini (`google-genai` SDK, `gemini-2.5-flash` model) |
 | Database | SQLite 3 (parameterized queries only) |
 | Auth | JWT (python-jose + passlib) |
 | Security | slowapi rate limiting, bleach sanitization, gitleaks |
@@ -151,6 +151,59 @@ QueryLens supports **multi-turn conversational queries**. Users can ask follow-u
 3. Follow up: *"What about the mileage for those?"* — Gemini knows "those" = diesel
 
 **How it works:** Each query's generated SQL is stored in `query_history`. Before each new query, the backend loads the last 5 Q→SQL turns and injects them into the Gemini prompt as conversation context.
+
+---
+
+## Voice Input
+
+QueryLens supports **hands-free querying** via the browser's built-in Web Speech API.
+
+### How to Use
+1. Click the **microphone icon** (left of the query input bar).
+2. The button turns red with a pulse animation — speak your question naturally.
+3. Your words appear live in the input field as you speak (interim transcription).
+4. Click the microphone icon again to **stop recording** — the query auto-submits immediately.
+
+### Browser Requirements
+> The Web Speech API is **only available in Chromium-based browsers**.
+
+| Browser | Support |
+|---|:---:|
+| Google Chrome 25+ | ✅ |
+| Microsoft Edge 79+ | ✅ |
+| Firefox | ❌ (not supported) |
+| Safari | ⚡ Partial (macOS 14.4+ only) |
+
+### Error States
+If voice input fails, a descriptive error label appears below the mic button for 4 seconds:
+
+| Error | Label Shown |
+|---|---|
+| Mic permission denied | *"Microphone access denied"* |
+| No speech detected | *"No speech detected — try again"* |
+| Network issue | *"Network error — check your connection"* |
+| No mic hardware | *"No microphone found"* |
+
+### Production / HTTPS Note
+> The Web Speech API **requires a secure context (HTTPS)** in production. It works on `localhost` without HTTPS for development.
+
+---
+
+## Dashboard Features
+
+All nine dashboard features are implemented and production-ready:
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | **Confidence Badge** | Indicates query certainty (High, Medium, Interpreted) |
+| 2 | **Sample Query Chips** | Clickable example queries shown on empty state |
+| 3 | **Export Chart as PNG** | Downloads current chart as a PNG file |
+| 4 | **SQL Disclosure Toggle** | Reveals the generated SQL behind each answer |
+| 5 | **Smart Can't-Answer** | Explains why + suggests a related answerable question |
+| 6 | **Chart Title Auto-Gen** | Gemini generates a professional title per chart |
+| 7 | **Voice Input** | Hands-free querying via Web Speech API |
+| 8 | **Dashboard Pinning** | Pin charts to keep them highlighted in the thread |
+| 9 | **Key Insights Card** | Gemini auto-generates 2–3 data insights per result |
 
 ---
 
