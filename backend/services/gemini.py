@@ -163,7 +163,7 @@ def _get_gemini_client() -> genai.GenerativeModel:
             "Obtain a key from https://aistudio.google.com and set it in backend/.env"
         )
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel(model_name="gemini-2.5-flash")
+    return genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 
 # ---------------------------------------------------------------------------
@@ -283,3 +283,88 @@ def _generate_explanation(user_query: str, sql: str) -> str:
         return response.text.strip()[:500]  # Cap length
     except Exception:
         return "Here are the results for your query."
+
+
+def generate_chart_title(user_query: str, sql: str) -> str:
+    """
+    Generate a concise, descriptive title for the chart result.
+    E.g. "Average Price by Fuel Type — BMW Inventory"
+    Falls back to the user query if Gemini fails.
+    """
+    try:
+        model = _get_gemini_client()
+        prompt = (
+            f"Generate a short, professional chart title (max 8 words) for a chart "
+            f"that answers: '{user_query}'. "
+            f"Format: '[Metric] by [Dimension]' or similar. "
+            f"Return ONLY the title, no quotes, no punctuation at the end."
+        )
+        response = model.generate_content(prompt)
+        title = response.text.strip()[:100]
+        return sanitize_text(title) or user_query[:60]
+    except Exception:
+        return user_query[:60]
+
+
+def generate_key_insights(user_query: str, data: list[dict], sql: str) -> list[str]:
+    """
+    Generate 2–3 bullet-point key insights from the query result data.
+    AthenaGuard §7: Only sends column names and aggregate values — no raw PII rows.
+    """
+    try:
+        if not data or len(data) == 0:
+            return []
+
+        # Build a safe summary of the data (max 10 rows, no raw strings)
+        preview_rows = data[:10]
+        data_summary = "\n".join(
+            ", ".join(f"{k}: {v}" for k, v in row.items())
+            for row in preview_rows
+        )
+        total_rows = len(data)
+
+        model = _get_gemini_client()
+        prompt = (
+            f"You are a data analyst. Given this query result ({total_rows} total rows), "
+            f"provide exactly 2-3 concise, insightful bullet points that highlight "
+            f"the most interesting patterns, comparisons, or anomalies.\n\n"
+            f"Question: {user_query}\n"
+            f"Data sample:\n{data_summary}\n\n"
+            f"Rules:\n"
+            f"- Each insight must be one sentence\n"
+            f"- Include specific numbers where available\n"
+            f"- Return ONLY the bullet points, one per line, starting with '-'\n"
+            f"- No headers, no intro text"
+        )
+        response = model.generate_content(prompt)
+        raw = response.text.strip()
+        insights = [
+            sanitize_text(line.lstrip("-• ").strip())
+            for line in raw.split("\n")
+            if line.strip().startswith(("-", "•"))
+        ]
+        return insights[:3]  # Max 3 insights
+    except Exception:
+        return []
+
+
+def generate_cannot_answer_suggestion(user_query: str, schema_description: str) -> str:
+    """
+    Given a question that couldn't be answered, suggest a rephrasing
+    that would work with the available schema.
+    """
+    try:
+        model = _get_gemini_client()
+        prompt = (
+            f"A user asked: '{user_query}'\n"
+            f"The database schema is:\n{schema_description}\n\n"
+            f"This question cannot be answered from the schema. "
+            f"In ONE sentence, explain why and suggest a related question that CAN be answered. "
+            f"Format: 'I don\\'t have data about X, but I can help with Y — try asking: [example question]'\n"
+            f"Keep it under 150 characters. Return only that sentence."
+        )
+        response = model.generate_content(prompt)
+        return sanitize_text(response.text.strip()[:300])
+    except Exception:
+        return ""
+

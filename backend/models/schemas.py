@@ -35,7 +35,11 @@ class QueryResponse(BaseModel):
     data: list[dict[str, Any]]
     columns: list[str]
     explanation: str
-    query_echo: str   # Echoes back the sanitized user query (not the SQL)
+    query_echo: str          # Echoes back the sanitized user query (not the SQL)
+    generated_sql: str = "" # The SQL that ran — shown in the UI for transparency
+    confidence_level: str = "high"  # "high" | "medium" | "interpreted"
+    chart_title: str = ""   # Auto-generated chart title
+    key_insights: list[str] = []  # Bullet-point insights from Gemini
 
 
 class CannotAnswerResponse(BaseModel):
@@ -43,6 +47,7 @@ class CannotAnswerResponse(BaseModel):
     message: str = (
         "I could not find data to answer that question from the available inventory."
     )
+    suggestion: str = ""  # Smart suggestion for rephrasing
 
 
 class HistoryItem(BaseModel):

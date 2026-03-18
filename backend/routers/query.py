@@ -7,6 +7,7 @@ AthenaGuard §4: User input sanitized with bleach before any processing.
 
 import sqlite3
 import os
+import asyncio
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -21,7 +22,12 @@ from models.schemas import (
     HistoryResponse,
     HistoryItem,
 )
-from services.gemini import nl_to_sql
+from services.gemini import (
+    nl_to_sql,
+    generate_chart_title,
+    generate_key_insights,
+    generate_cannot_answer_suggestion,
+)
 from services.sql_executor import execute_query, validate_sql
 from services.chart_selector import select_chart
 from services.csv_loader import get_upload_schema
@@ -143,7 +149,10 @@ async def submit_query(
     if "error" in result:
         if result["error"] == "cannot_answer":
             _record_history(body.session_id or "", clean_query, "cannot_answer")
-            return CannotAnswerResponse()
+            # Feature 5: Smart cannot_answer suggestion
+            active_schema = schema_override or ""
+            suggestion = generate_cannot_answer_suggestion(clean_query, active_schema)
+            return CannotAnswerResponse(suggestion=suggestion)
         # api_error or other
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -179,16 +188,29 @@ async def submit_query(
     columns = list(data[0].keys()) if data else []
     chart_type = select_chart(sql, data)
 
-    # -- 6. Record to history (including generated SQL for follow-up context) --
-    _record_history(body.session_id or "", clean_query, chart_type, generated_sql=sql, explanation=explanation)
+    # -- 6. Determine confidence level --
+    confidence_level = "interpreted" if conversation_context else "high"
 
-    # -- 7. Return Pydantic response (AthenaGuard §3: never raw rows) --
+    # -- 7. Run chart title, key insights, and history write CONCURRENTLY --
+    # Each Gemini call is ~1-2s; running in parallel cuts total latency significantly.
+    loop = asyncio.get_event_loop()
+    chart_title, key_insights, _ = await asyncio.gather(
+        loop.run_in_executor(None, generate_chart_title, clean_query, sql),
+        loop.run_in_executor(None, generate_key_insights, clean_query, data, sql),
+        loop.run_in_executor(None, _record_history, body.session_id or "", clean_query, chart_type, sql, explanation),
+    )
+
+    # -- 9. Return Pydantic response (AthenaGuard §3: never raw rows) --
     return QueryResponse(
         chart_type=chart_type,
         data=data,
         columns=columns,
         explanation=explanation,
-        query_echo=clean_query,  # Echoes sanitized user query, not SQL
+        query_echo=clean_query,
+        generated_sql=sql,
+        confidence_level=confidence_level,
+        chart_title=chart_title,
+        key_insights=key_insights,
     )
 
 

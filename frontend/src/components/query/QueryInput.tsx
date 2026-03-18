@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Send, Loader2 } from "lucide-react";
+import VoiceInput from "./VoiceInput";
 
 interface QueryInputProps {
   onSubmit: (query: string) => void;
@@ -27,10 +28,18 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
     }
   };
 
+  // Feature 7: Voice input — populates the text field with the transcript
+  const handleVoiceTranscript = (transcript: string) => {
+    setText(transcript.slice(0, maxLength));
+  };
+
   return (
     <div className="w-full bg-transparent p-6 z-20 pb-8">
-      <div className="max-w-4xl mx-auto relative flex items-center">
-        <form onSubmit={handleSubmit} className="w-full relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full">
+      <div className="max-w-4xl mx-auto relative flex items-center gap-2">
+        {/* Feature 7: Voice mic button */}
+        <VoiceInput onTranscript={handleVoiceTranscript} disabled={disabled} />
+
+        <form onSubmit={handleSubmit} className="flex-1 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full">
           <input
             type="text"
             className="w-full bg-surface/80 dark:bg-surface/50 backdrop-blur-md border border-black/10 dark:border-white/10 text-foreground placeholder-muted rounded-full pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all text-lg disabled:opacity-50 disabled:cursor-not-allowed"
@@ -58,3 +67,4 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
     </div>
   );
 }
+

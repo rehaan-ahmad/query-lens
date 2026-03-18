@@ -8,6 +8,12 @@ export type QueryResponseData = {
   columns?: string[];
   explanation?: string;
   query_echo?: string;
+  generated_sql?: string;
+  confidence_level?: "high" | "medium" | "interpreted";
+  chart_title?: string;
+  key_insights?: string[];
+  // cannot_answer specific
+  suggestion?: string;
 };
 
 export function useQuery() {
