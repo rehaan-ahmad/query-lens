@@ -3,11 +3,13 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Mic, MicOff } from "lucide-react";
 
 interface VoiceInputProps {
-  onTranscript: (text: string) => void;
+  /** Called continuously as the user speaks (interim transcript) */
+  onInterim: (text: string) => void;
+  /** Called once with the final transcript when mic stops — triggers query submit */
+  onFinal: (text: string) => void;
   disabled?: boolean;
 }
 
-// Browser SpeechRecognition API — no external library needed
 declare global {
   interface Window {
     SpeechRecognition?: new () => SpeechRecognitionInstance;
@@ -19,6 +21,7 @@ interface SpeechRecognitionInstance {
   lang: string;
   interimResults: boolean;
   maxAlternatives: number;
+  continuous: boolean;
   onresult: ((event: SpeechRecognitionEvent) => void) | null;
   onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
   onend: (() => void) | null;
@@ -29,6 +32,7 @@ interface SpeechRecognitionInstance {
 
 interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
+  resultIndex: number;
 }
 
 interface SpeechRecognitionResultList {
@@ -49,12 +53,13 @@ interface SpeechRecognitionErrorEvent {
   error: string;
 }
 
-export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
+export default function VoiceInput({ onInterim, onFinal, disabled }: VoiceInputProps) {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  // Guard against double-start: track actual running state in a ref (not React state)
   const isRunningRef = useRef(false);
+  // Track the latest final transcript so onend can submit it
+  const finalTranscriptRef = useRef("");
 
   useEffect(() => {
     const SpeechRecognitionCtor =
@@ -63,11 +68,11 @@ export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) 
       setSupported(true);
       const r = new SpeechRecognitionCtor();
       r.lang = "en-US";
-      r.interimResults = false;
+      r.interimResults = true;   // Show words as they're spoken
+      r.continuous = true;       // Keep listening until explicitly stopped
       r.maxAlternatives = 1;
       recognitionRef.current = r;
     }
-    // Cleanup: abort on unmount
     return () => {
       if (isRunningRef.current && recognitionRef.current) {
         recognitionRef.current.abort();
@@ -79,9 +84,28 @@ export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) 
     const recognition = recognitionRef.current;
     if (!recognition || disabled || isRunningRef.current) return;
 
+    finalTranscriptRef.current = "";
+
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      onTranscript(transcript);
+      let interimText = "";
+      let finalText = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const text = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += text;
+        } else {
+          interimText += text;
+        }
+      }
+
+      // Accumulate confirmed final text
+      if (finalText) {
+        finalTranscriptRef.current += finalText;
+      }
+
+      // Show live text in the input field (final so far + current interim)
+      onInterim((finalTranscriptRef.current + interimText).trim());
     };
 
     recognition.onerror = () => {
@@ -92,6 +116,11 @@ export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) 
     recognition.onend = () => {
       isRunningRef.current = false;
       setListening(false);
+      // Auto-submit the accumulated transcript when mic stops
+      const transcript = finalTranscriptRef.current.trim();
+      if (transcript) {
+        onFinal(transcript);
+      }
     };
 
     try {
@@ -99,17 +128,16 @@ export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) 
       isRunningRef.current = true;
       setListening(true);
     } catch {
-      // Already started — ignore
       isRunningRef.current = false;
       setListening(false);
     }
-  }, [onTranscript, disabled]);
+  }, [onInterim, onFinal, disabled]);
 
   const stopListening = useCallback(() => {
     const recognition = recognitionRef.current;
     if (!recognition || !isRunningRef.current) return;
+    // stop() — triggers onend → which fires onFinal and auto-submits
     recognition.stop();
-    // State will be updated by the onend callback
   }, []);
 
   if (!supported) return null;
@@ -119,7 +147,7 @@ export default function VoiceInput({ onTranscript, disabled }: VoiceInputProps) 
       type="button"
       onClick={listening ? stopListening : startListening}
       disabled={disabled}
-      title={listening ? "Stop listening" : "Ask with voice"}
+      title={listening ? "Stop & send" : "Ask with voice"}
       className={`flex-shrink-0 p-2.5 rounded-xl transition-all duration-200 border ${
         listening
           ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/30 animate-pulse"

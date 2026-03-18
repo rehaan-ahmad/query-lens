@@ -28,16 +28,26 @@ export default function QueryInput({ onSubmit, disabled }: QueryInputProps) {
     }
   };
 
-  // Feature 7: Voice input — populates the text field with the transcript
-  const handleVoiceTranscript = (transcript: string) => {
-    setText(transcript.slice(0, maxLength));
+  // Feature 7: Voice input
+  // onInterim → streams live words into the input field
+  // onFinal   → auto-submits the query when mic is turned off
+  const handleVoiceInterim = (text: string) => {
+    setText(text.slice(0, maxLength));
+  };
+
+  const handleVoiceFinal = (text: string) => {
+    const q = text.trim().slice(0, maxLength);
+    if (q && !disabled) {
+      onSubmit(q);
+      setText("");
+    }
   };
 
   return (
     <div className="w-full bg-transparent p-6 z-20 pb-8">
       <div className="max-w-4xl mx-auto relative flex items-center gap-2">
         {/* Feature 7: Voice mic button */}
-        <VoiceInput onTranscript={handleVoiceTranscript} disabled={disabled} />
+        <VoiceInput onInterim={handleVoiceInterim} onFinal={handleVoiceFinal} disabled={disabled} />
 
         <form onSubmit={handleSubmit} className="flex-1 relative shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full">
           <input
